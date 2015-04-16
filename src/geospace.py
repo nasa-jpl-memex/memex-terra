@@ -80,11 +80,12 @@ class Geospace(girder.api.rest.Resource):
                     from geopy.geocoders import Nominatim
                     geolocator = Nominatim()
                     loc = geolocator.geocode(location)
-                    loc = {"latitude":loc.latitude, "longitude": loc.longitude};
+                    loc = {"longitude":loc.longitude, "latitude": loc.latitude};
+                    print loc
                 else:
                     try:
                         loc = location.split(",")
-                        loc = {"latitude":float(loc[0]), "longitude": float(loc[1])};
+                        loc = {"longitude":float(loc[0]), "latitude": float(loc[1])};
                         search_radius = 0.1
                     except:
                         use_location = False
@@ -93,7 +94,7 @@ class Geospace(girder.api.rest.Resource):
                 # Hard-coded to 10 units for now
                 geospatial_query = {   "loc" : {"$geoWithin" :
                         {
-                            "$center" : [[loc["latitude"], loc["longitude"]], search_radius]
+                            "$center" : [[loc["longitude"], loc["latitude"]], search_radius]
                         }
                     }
                 }
@@ -106,6 +107,8 @@ class Geospace(girder.api.rest.Resource):
 
         start_time = start
         end_time = end
+
+        print "geospatial_query", geospatial_query
 
         if not use_location:
             query_result = coll.find({"time":
