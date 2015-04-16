@@ -7,6 +7,7 @@ import girder.api.rest
 from girder import logger
 from girder.api import access
 from girder.api.describe import Description
+import girder.models
 
 # ----------------------------------------------------------------------------
 class Scraper(girder.api.rest.Resource):
@@ -43,21 +44,24 @@ class Geospace(girder.api.rest.Resource):
         loc = None
         search_radius = 1
 
-        db = pymongo.MongoClient('mongodb://localhost:27017/ist')
+        # TODO read it from the config file
+        db = pymongo.MongoClient(girder.models.getDbConfig().get('isuri', 'mongodb://localhost:27017/ist'))
         database = db.get_default_database()
-        coll = database['ads']
+        coll = database['ads2']
 
         # Get valid time range
         time_range = params.get('duration', None)
         if (time_range is None):
             result['duration'] = {
                 "start": [i for i in coll.find(
-                    {"field4": { "$exists": True, "$nin": ["None"] } } ).sort(
-                        "field4",  1).limit(1)][0],
+                    {"time": { "$exists": True, "$nin": ["None"] } } ).sort(
+                        "time",  1).limit(1)][0],
                 "end":   [i for i in coll.find(
-                    {"field4": { "$exists": True, "$nin": ["None"] } } ).sort(
-                        "field4", -1).limit(1)][0]
+                    {"time": { "$exists": True, "$nin": ["None"] } } ).sort(
+                        "time", -1).limit(1)][0]
             };
+
+            print result
             return result;
 
         # Get location if provided
@@ -76,11 +80,12 @@ class Geospace(girder.api.rest.Resource):
                     from geopy.geocoders import Nominatim
                     geolocator = Nominatim()
                     loc = geolocator.geocode(location)
-                    loc = {"latitude":loc.latitude, "longitude": loc.longitude};
+                    loc = {"longitude":loc.longitude, "latitude": loc.latitude};
+                    print loc
                 else:
                     try:
                         loc = location.split(",")
-                        loc = {"latitude":float(loc[0]), "longitude": float(loc[1])};
+                        loc = {"longitude":float(loc[0]), "latitude": float(loc[1])};
                         search_radius = 0.1
                     except:
                         use_location = False
@@ -89,7 +94,7 @@ class Geospace(girder.api.rest.Resource):
                 # Hard-coded to 10 units for now
                 geospatial_query = {   "loc" : {"$geoWithin" :
                         {
-                            "$center" : [[loc["latitude"], loc["longitude"]], search_radius]
+                            "$center" : [[loc["longitude"], loc["latitude"]], search_radius]
                         }
                     }
                 }
@@ -100,18 +105,20 @@ class Geospace(girder.api.rest.Resource):
         start = time_range[0]
         end = time_range[1]
 
-        start_time = datetime.datetime.fromtimestamp(start).isoformat()
-        end_time = datetime.datetime.fromtimestamp(end).isoformat()
+        start_time = start
+        end_time = end
+
+        print "geospatial_query", geospatial_query
 
         if not use_location:
-            query_result = coll.find({"field4":
+            query_result = coll.find({"time":
                 {"$gte": start_time, "$lt": end_time}},
                 skip=offset, limit=limit, sort=sort)
         else:
             # When using location do not limit by time for now
             query_result = coll.find( {"$and":[
                     geospatial_query,
-                    {"field4":
+                    {"time":
                         {"$gte": start_time, "$lt": end_time}
                     }]
                 },
