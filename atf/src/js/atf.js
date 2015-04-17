@@ -990,6 +990,7 @@ $(function () {
   myApp.location = null;
   myApp.locationType="address";
   myApp.visibleDialogs = [];
+  myApp.weights = {};
   myApp.prevTimestamp = 0;
 
   $( window ).resize(function() {
@@ -1037,55 +1038,73 @@ $(function () {
 
   // Aggregate data
   //--------------------------------------------------------------------------
-  function prepareDataForRendering(data) {
-    var i = null, key = null, min = 0, max = 1, newData = [], ships_from, ships_to,
+   function prepareDataForRendering(data) {
+   var i = null, key = null, keys = null, min = 0, max = 1, newData = [], ships_from, ships_to,
             dataItem = null, children = null, items = null, child = null, childKey = null,
-            childrenKeys = null;
-    myApp.bin = {};
+            childrenKeys = null, shipsToNames = null;
+   myApp.bin = {};
 
-    if (data) {
+   if (data) {
       data.forEach(function(item) {
-        ships_from  = item.ships_from
-        ships_to = item.ships_to
+         ships_from  = item.ships_from;
+         ships_to = item.ships_to;
 
-        if (ships_to !== "Worldwide" && ships_from !== "Worldwide") {
-          key = ships_from.trim();
-          if (key in myApp.bin) {
+         if (ships_to !== "Worldwide" && ships_from !== "Worldwide") {
+            keys = [ships_from.trim()];
+            shipsToNames = ships_to.split(",");
+            for (i = 0; i < shipsToNames.length; ++i) {
+               keys.push(shipsToNames[i].trim());
+            }
+            for (i = 0; i < keys.length; ++i) {
+               key = keys[i];
+               if (!(key in myApp.bin)) {
+                  children = [];
+                  childrenKeys = [];
+                  var loc = country_to_latlon[key];
+                  if (loc && loc["longitude"] && loc["latitude"]) {
+                     dataItem = {"country": key, "childrenKeys": childrenKeys, "children": children, "loc":loc};
+                     dataItem.x = parseFloat(dataItem.loc["longitude"]);
+                     dataItem.y = parseFloat(dataItem.loc["latitude"]);
+                     newData.push(dataItem);
+                     myApp.bin[key] = dataItem;
+                  }
+               }
+            }
+         }
+      });
+   }
+
+
+   if (data) {
+      data.forEach(function(item) {
+         ships_from  = item.ships_from;
+         ships_to = item.ships_to;
+
+         if (ships_to !== "Worldwide" && ships_from !== "Worldwide") {
+            key = ships_from.trim();
             children = myApp.bin[key].children;
             childrenKeys = myApp.bin[key].childrenKeys;
-          } else {
-            children = [];
-            childrenKeys = [];
-            dataItem = {"country": key, "childrenKeys": childrenKeys, "children": children, "loc":country_to_latlon[key]};
-            dataItem.x = parseFloat(dataItem.loc["longitude"]);
-            dataItem.y = parseFloat(dataItem.loc["latitude"]);
-            newData.push(dataItem);
-            myApp.bin[key] = dataItem;
-          }
+            items = ships_to.split(",")
 
-          items = ships_to.split(",")
-          for (i = 0; i < items.length; ++i) {
-            childKey = items[i].trim();
-            if (key !== childKey) {
-              if (childrenKeys.indexOf(child) !== -1) {
-                continue;
-              }
-              else {
-                if (childKey in newData) {
-                  children.push(newData[childKey]);
-                } else {
-                   var newChildren = []
-                   dataItem = {"country": childKey, "childrenKeys": [], "children": newChildren, "loc":country_to_latlon[childKey]};
-                   dataItem.x = parseFloat(dataItem.loc["longitude"]);
-                   dataItem.y = parseFloat(dataItem.loc["latitude"]);
-                   newData.push(dataItem);
-                   myApp.bin[key] = dataItem;
-                   children.push(dataItem);
-                }
-              }
+            for (i = 0; i < items.length; ++i) {
+               childKey = items[i].trim();
+               if (key !== childKey) {
+                  if (childrenKeys.indexOf(childKey) !== -1 ||
+                     (childKey in newData && (newData[childKey].childrenKeys.indexOf(key) !==  -1))) {
+                     myApp.weights[key + "-" + childKey] =  myApp.weights[key + "-" + childKey] + 1;
+                  }
+                  else {
+                     if (childKey in myApp.bin) {
+                        myApp.weights[key + "-" + childKey] = 1;
+                        children.push(myApp.bin[childKey]);
+                        childrenKeys.push(childKey);
+                     }
+                  }
+               }
             }
-          }
-        }
+         }
+      });
+
 
         // key = item.loc[0] + '|' + item.loc[1];
         // if (key in myApp.locationBin) {
@@ -1100,7 +1119,7 @@ $(function () {
         //   myApp.locationBin[key] = item;
         //   newdata.push(item);
         // }
-      });
+
 
       console.log(newData);
     }
@@ -1129,15 +1148,22 @@ $(function () {
     var layer = myApp.map.createLayer('feature', {'renderer' : 'd3'}),
         style = {
         nodes: {
+          radius: 8.0,
           stroke: false,
           fill: true,
           fillColor: { r: 0.8, g: 0.5, b: 0.0 },
           fillOpacity: 1.0
         },
         links: {
-          strokeColor: { r:0.2, g:0.2, b:0.7 },
-          strokeWidth: 5.0,
-          strokeOpacity: 0.1,
+          strokeColor: { r:0.4, g:0.2, b:0.2 },
+          strokeWidth: function(d, i) {
+            var key = d.source_data.country + "-" + d.target_data.country;
+            if (key in myApp.weights) {
+               return Math.log(myApp.weights[key]) * 2.0;
+            }
+            return 4.0;
+         },
+          strokeOpacity: function(d, i) { console.log(i); return 0.15; },
         },
         linkType: 'path'
       };
