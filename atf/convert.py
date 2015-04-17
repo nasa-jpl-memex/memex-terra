@@ -4,12 +4,13 @@ import json
 csvfile = open('country_latlon.csv', 'rU')
 jsonfile = open('country_latlon.json', 'w')
 
-fieldnames = ("Country","Alpha-2 code","Numeric code","Latitude (average)","Longitude (average)")
+fieldnames = ("Country","Alpha-2 code","Alpha-3 code","Numeric code","Latitude (average)","Longitude (average)","Icon")
 reader = csv.DictReader(csvfile, fieldnames)
 print reader
 index = 0
 data = {}
 for row in reader:
+	print row
 	if index == 0:
 		pass
 	else:
