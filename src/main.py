@@ -20,7 +20,7 @@ class GeoAppRoot(object):
     indexHtml = None
     vars = {
         'apiRoot': 'api/v1',
-        'staticRoot': 'built',
+        'staticRoot': 'static',
         'girderRoot': 'girder/static',
     }
 
@@ -48,6 +48,10 @@ class GeoApp():
             '/src': {
                 'tools.staticdir.on': 'True',
                 'tools.staticdir.dir': os.path.join(ROOT_DIR, 'src')
+            },
+            '/apps': {
+                'tools.staticdir.on': 'True',
+                'tools.staticdir.dir': os.path.join(ROOT_DIR, 'apps')
             },
             'girder/static': curConfig['/static'],
             'girder/static/lib/bootstrap/fonts': {

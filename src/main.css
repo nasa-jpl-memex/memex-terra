@@ -23,10 +23,15 @@ footer {
 }
 
 .gs-geospace {
-  top: 54px;
+  top: 2px;
   height: 100%;
   margin: 0px;
   padding: 0px;
+}
+
+.gs-tabs {
+  margin-top: 54px;
+  background: white;
 }
 
 .gs-image-space {
@@ -111,7 +116,7 @@ footer {
   background-color: #474747;
   color: white;
   left: 0%;
-  top: 74px;
+  top: 128px;
   padding-left: 20px;
   padding-right: 20px;
   position: fixed;
