@@ -37,8 +37,6 @@ eaApp.timeSeries = function(data, compData, clearPrev) {
     cleanData.push({"date": data.result[i][0], "value": data.result[i][1], "symbol": "comp"});
   }
 
-  console.log(cleanData);
-
   var spec = {
     "width": $("#statistics").width() * 0.90,
     "height": $("#statistics").height(),
@@ -110,9 +108,7 @@ eaApp.timeSeries = function(data, compData, clearPrev) {
                 "y": {"scale": "y", "field": "data.value"},
                 "size": {"value": 50},
                 "fill": {
-                    "r": {"value": 255},
-                    "g": {"value": 100},
-                    "b": {"value": 100}
+                  "scale": "color", "field": "data.symbol"
                 },
                 "strokeWidth": {"value": 2}
               },
