@@ -497,4 +497,3 @@ myApp.setLocationTypeToAddress = function() {
 myApp.setLocationTypeToLatLon = function() {
   myApp.locationType = "4326";
 }
-

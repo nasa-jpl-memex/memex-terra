@@ -9,7 +9,7 @@
     <script src="../src/js/jquery.geocomplete.min.js"></script>
     <script src="../src/js/bootstrap.min.js"></script>
     <script src="../src/js/vega.js"></script>
-    <script src="../src/js/main.js"></script>
+    <script src="ea.js"></script>
     <link rel="stylesheet" href="../src/css/bootstrap.min.css">
     <link rel="stylesheet" href="../src/css/font-awesome.min.css">
     <!-- <link rel="stylesheet" href="src/jquery-ui-1.11.3.custom/jquery-ui.min.css" type="text/css" /> -->
@@ -38,7 +38,10 @@
               <li role="presentation"><a href="#">Home</a></li>
               <li role="presentation" class="active"><a href="ea.html">EconomicAnalysis</a></li>
             </ul>
-            <div class="gs-geospace col-md-8">
+            <div class="gs-image-space col-md-8">
+                <div id="statistics"></div>
+            </div>
+            <div class="gs-geospace col-md-4">
                     <div id="map"></div>
                     <div class="gs-date-display btn btn-primary btn-md">
                         <div><span id="start"></span></div>
@@ -72,10 +75,6 @@
                             </div>
                         </div>
                     </div>
-            </div>
-            <div class="gs-image-space col-md-4">
-                <div id="statistics"></div>
-                <div id="images"></div>
             </div>
         </div>
     </div>
