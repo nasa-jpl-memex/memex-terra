@@ -124,6 +124,14 @@ footer {
   font-family: "Courier New", Courier, monospace;
 }
 
+.gs-select {
+  position: fixed;
+}
+
+.gs-select-location {
+  position: fixed;
+}
+
 .gs-player-panel {
   width: 70%;
   left: 0%;

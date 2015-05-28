@@ -1,7 +1,35 @@
-var eaApp = {};
+var tempus = {};
+
+tempus.map = null;
+$( window ).resize(function() {
+    tempus.resize();
+});
+
+tempus.map = geo.map({
+      node: '#map',
+      center: {
+        x: -98.0,
+        y: 39.5
+      },
+      zoom: 2,
+      autoResize: false
+    });
+tempus.map.createLayer(
+'osm',
+{
+  baseUrl: 'http://otile1.mqcdn.com/tiles/1.0.0/map/'
+}
+);
+
+tempus.resize = function() {
+var height = $(window).height(),
+    width  = $("#map").width();
+tempus.map.resize(0, 0, width, height);
+}
+tempus.resize();
 
 //--------------------------------------------------------------------------
-eaApp.getTimeSeries = function() {
+tempus.getTimeSeries = function() {
   // Hard-coded for now
   $.ajax({
     url: "http://cors-anywhere.herokuapp.com/http://tempus-demo.ngrok.com/api/series?table=escort_ads&sort=1&response_col=price_per_hour&group_col=msaname&group=Memphis,%20TN-AR-MS%20MSA",
@@ -10,16 +38,29 @@ eaApp.getTimeSeries = function() {
         $.ajax({
             url: "http://cors-anywhere.herokuapp.com/http://tempus-demo.ngrok.com/api/comparison?table=escort_ads&sort=1&response_col=price_per_hour&group_col=msaname&group=Bakersfield,%20CA%20MSA&covs=population%7Cviolent",
             success: function( compData ) {
-                eaApp.timeSeries( data, compData );
+                tempus.timeSeries( data, compData );
             }
         })
     }
   });
 }
 
+tempus.getLocations = function() {
+  $.ajax({
+    url: "http://cors-anywhere.herokuapp.com/https://tempus-demo.ngrok.com/api/groups?table=escort_ads&group_col=msaname",
+    // Work with the response
+    success: function( data ) {
+        var locations = data, i = null;
+        for (i = 0; i < locations.msaname.length; ++i) {
+          $("#gs-select-location").append("<option>" + locations.msaname[i]);
+        }
+    }
+  });
+}
+
 // Create statistical plot
 //--------------------------------------------------------------------------
-eaApp.timeSeries = function(data, compData, clearPrev) {
+tempus.timeSeries = function(data, compData, clearPrev) {
   // var data = [
   //   {"date": "2012-01-05",  "value": 28},
   //   {"date": "2012-01-10",  "value": 43}
@@ -157,5 +198,14 @@ eaApp.timeSeries = function(data, compData, clearPrev) {
 $(function () {
   'use strict';
 
-  eaApp.getTimeSeries();
+  tempus.getTimeSeries();
+
+  $('#datetimepicker1').datetimepicker();
+
+  $('#datetimepicker2').datetimepicker();
+
+  $('.dropdown-toggle').dropdown();
+
+  tempus.getLocations();
 });
+

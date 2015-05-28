@@ -15,6 +15,9 @@
     <!-- <link rel="stylesheet" href="src/jquery-ui-1.11.3.custom/jquery-ui.min.css" type="text/css" /> -->
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css">
     <link rel="stylesheet" href="../src/main.css">
+    <script type="text/javascript" src="../src/bower_components/moment/moment.js"></script>
+    <script type="text/javascript" src="../src/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+     <link rel="stylesheet" href="../src/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css" />
 </head>
 <body>
     <div>
@@ -36,17 +39,46 @@
         <div class="row gs-fill">
             <ul class="nav nav-tabs gs-tabs">
               <li role="presentation"><a href="#">Home</a></li>
-              <li role="presentation" class="active"><a href="ea.html">EconomicAnalysis</a></li>
+              <li role="presentation" class="active"><a href="ea.html">Tempus</a></li>
             </ul>
+            <div class="gs-select">
+                <div class='col-sm-3'>
+                    <label>Start Time</label>
+                    <div class="form-group">
+                        <div class='input-group date' id='datetimepicker1'>
+                            <input type='text' class="form-control" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class='col-sm-3'>
+                    <label>End Time</label>
+                    <div class="form-group">
+                        <div class='input-group date' id='datetimepicker2'>
+                            <input type='text' class="form-control" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class='col-sm-6'>
+                    <label for="sel1">Location</label>
+                    <select class="form-control" id="gs-select-location">
+                    </select>
+                </div>
+            </div>
             <div class="gs-image-space col-md-8">
                 <div id="statistics"></div>
             </div>
             <div class="gs-geospace col-md-4">
                     <div id="map"></div>
-                    <div class="gs-date-display btn btn-primary btn-md">
+                    <!-- <div class="gs-date-display btn btn-primary btn-md">
                         <div><span id="start"></span></div>
                         <div><span id="end"></span></div>
-                    </div>
+                    </div> -->
                     <div class="gs-control-center">
                         <div class="gs-player-panel">
                             <div class="gs-player container-fluid">
