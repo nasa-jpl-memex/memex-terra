@@ -181,3 +181,7 @@ footer {
 a {
   color: white;
 }
+
+.gs-display-inline {
+  display: inline;
+}

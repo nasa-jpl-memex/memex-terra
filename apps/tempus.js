@@ -1,3 +1,4 @@
+// Tempus Application
 var tempus = {};
 
 tempus.map = null;
@@ -29,23 +30,28 @@ tempus.map.resize(0, 0, width, height);
 tempus.resize();
 
 //--------------------------------------------------------------------------
-tempus.getTimeSeries = function() {
+tempus.getTimeSeries = function(targetLocation, callback) {
+  console.log(targetLocation);
+
   // Hard-coded for now
   $.ajax({
-    url: "http://cors-anywhere.herokuapp.com/http://tempus-demo.ngrok.com/api/series?table=escort_ads&sort=1&response_col=price_per_hour&group_col=msaname&group=Memphis,%20TN-AR-MS%20MSA",
+    url: "http://cors-anywhere.herokuapp.com/http://tempus-demo.ngrok.com/api/series?table=escort_ads&sort=1&response_col=price_per_hour&group_col=msaname&group="+targetLocation,
     // Work with the response
     success: function( data ) {
         $.ajax({
-            url: "http://cors-anywhere.herokuapp.com/http://tempus-demo.ngrok.com/api/comparison?table=escort_ads&sort=1&response_col=price_per_hour&group_col=msaname&group=Bakersfield,%20CA%20MSA&covs=population%7Cviolent",
+            url: "http://cors-anywhere.herokuapp.com/http://tempus-demo.ngrok.com/api/comparison?table=escort_ads&sort=1&response_col=price_per_hour&group_col=msaname&group="+targetLocation+"&covs=population%7Cviolent",
             success: function( compData ) {
                 tempus.timeSeries( data, compData );
+                if (callback) {
+                  callback();
+                }
             }
         })
     }
   });
 }
 
-tempus.getLocations = function() {
+tempus.getLocations = function(callback) {
   $.ajax({
     url: "http://cors-anywhere.herokuapp.com/https://tempus-demo.ngrok.com/api/groups?table=escort_ads&group_col=msaname",
     // Work with the response
@@ -53,6 +59,10 @@ tempus.getLocations = function() {
         var locations = data, i = null;
         for (i = 0; i < locations.msaname.length; ++i) {
           $("#gs-select-location").append("<option>" + locations.msaname[i]);
+        }
+
+        if (callback) {
+          callback();
         }
     }
   });
@@ -194,11 +204,23 @@ tempus.timeSeries = function(data, compData, clearPrev) {
   }
 }
 
+tempus.toggleRunSpinner = function(showSpinner) {
+  if (showSpinner) {
+    $("#gs-run-spinner .gs-spinner-icon").show();
+    $("#gs-run-spinner .gs-spinner-text").hide();
+  } else {
+    $("#gs-run-spinner .gs-spinner-icon").hide();
+    $("#gs-run-spinner .gs-spinner-text").show();
+  }
+}
+
 //--------------------------------------------------------------------------
 $(function () {
   'use strict';
 
-  tempus.getTimeSeries();
+  // tempus.getLocations(function() {
+  //   tempus.getTimeSeries($("#gs-select-location").text());
+  // });
 
   $('#datetimepicker1').datetimepicker();
 
@@ -206,7 +228,19 @@ $(function () {
 
   $('.dropdown-toggle').dropdown();
 
-  tempus.getLocations();
+  $("#gs-run-spinner .gs-spinner-icon").hide();
+  $("#spinner .gs-spinner-icon").hide();
+  $("#spinner .gs-spinner-text").hide();
+
+  // Event handlers
+  $( "#gs-select-form" ).submit(function( event ) {
+    tempus.toggleRunSpinner(true);
+    tempus.getTimeSeries($("#gs-select-location").text(), function() {
+      tempus.toggleRunSpinner(false);
+    });
+
+    return false;
+  });
 
   // Now draw the map
   tempus.map = geo.map({

@@ -42,7 +42,7 @@
             </ul>
             <div class="row">
                 <div class="gs-selection col-md-12">
-                    <form class="form-inline">
+                    <form class="form-inline" id="gs-select-form">
                         <div class="form-group">
                             <label>Start Time</label>
                             <div class='input-group date' id='datetimepicker1'>
@@ -61,7 +61,12 @@
                             <label for="sel1">Location</label>
                             <select class="form-control" id="gs-select-location">
                             </select>
-                            <button class="btn btn-primary" type="submit">Run</button>
+                            <div id="gs-run-spinner" class="gs-display-inline">
+                                <button class="btn btn-primary gs-spinner-icon">
+                                    <span class="spinner"><i class="fa fa-circle-o-notch fa-spin"></i></span>
+                                </button>
+                                <button class="btn btn-primary gs-spinner-text" type="submit">Run</button>
+                            </div>
                         </div>
                     </form>
                 </div>
