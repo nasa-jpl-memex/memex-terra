@@ -10,7 +10,11 @@ body {
 }
 
 #map {
-  height: calc(100% - 54px);
+  height: 100%;
+  margin: 0px;
+  padding: 0px;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 footer {
@@ -23,7 +27,7 @@ footer {
 }
 
 .gs-geospace {
-  top: 2px;
+  top: 54px;
   height: 100%;
   margin: 0px;
   padding: 0px;
@@ -124,8 +128,9 @@ footer {
   font-family: "Courier New", Courier, monospace;
 }
 
-.gs-select {
+.gs-selection {
   position: fixed;
+  padding-top: 5px;
 }
 
 .gs-select-location {

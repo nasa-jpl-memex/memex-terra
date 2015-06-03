@@ -207,5 +207,29 @@ $(function () {
   $('.dropdown-toggle').dropdown();
 
   tempus.getLocations();
+
+  // Now draw the map
+  tempus.map = geo.map({
+          node: '#map',
+          center: {
+            x: -98.0,
+            y: 39.5
+          },
+          zoom: 2,
+          autoResize: false
+        });
+  tempus.map.createLayer(
+    'osm',
+    {
+      baseUrl: 'http://otile1.mqcdn.com/tiles/1.0.0/map/'
+    }
+  );
+
+  tempus.resize = function() {
+    var height = $(window).height(),
+        width  = $("#map").width();
+    tempus.map.resize(0, 0, width, height);
+  }
+  tempus.resize();
 });
 
