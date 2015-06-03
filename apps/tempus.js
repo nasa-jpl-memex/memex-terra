@@ -30,16 +30,21 @@ tempus.map.resize(0, 0, width, height);
 tempus.resize();
 
 //--------------------------------------------------------------------------
-tempus.getTimeSeries = function(targetLocation, callback) {
+tempus.getTimeSeries = function(targetLocation, covars, callback) {
   console.log(targetLocation);
 
   // Hard-coded for now
   $.ajax({
-    url: "http://cors-anywhere.herokuapp.com/http://tempus-demo.ngrok.com/api/series?table=escort_ads&sort=1&response_col=price_per_hour&group_col=msaname&group="+targetLocation,
+    url: "http://cors-anywhere.herokuapp.com/http://tempus-demo.ngrok.com/"+
+         "api/series?table=escort_ads&sort=1&response_col=price_per_hour&"+
+         "group_col=msaname&group="+targetLocation,
     // Work with the response
     success: function( data ) {
         $.ajax({
-            url: "http://cors-anywhere.herokuapp.com/http://tempus-demo.ngrok.com/api/comparison?table=escort_ads&sort=1&response_col=price_per_hour&group_col=msaname&group="+targetLocation+"&covs=population%7Cviolent",
+            url: "http://cors-anywhere.herokuapp.com/"+
+                 "http://tempus-demo.ngrok.com/api/comparison?table="+
+                 "escort_ads&sort=1&response_col=price_per_hour&group_col="+
+                 "msaname&group="+targetLocation+"&covs="+covars,
             success: function( compData ) {
                 tempus.timeSeries( data, compData );
                 if (callback) {
@@ -53,7 +58,8 @@ tempus.getTimeSeries = function(targetLocation, callback) {
 
 tempus.getLocations = function(callback) {
   $.ajax({
-    url: "http://cors-anywhere.herokuapp.com/https://tempus-demo.ngrok.com/api/groups?table=escort_ads&group_col=msaname",
+    url: "http://cors-anywhere.herokuapp.com/https://tempus-demo.ngrok.com/"+
+         "api/groups?table=escort_ads&group_col=msaname",
     // Work with the response
     success: function( data ) {
         var locations = data, i = null;
@@ -204,7 +210,7 @@ tempus.timeSeries = function(data, compData, clearPrev) {
   }
 }
 
-tempus.toggleRunSpinner = function(showSpinner) {
+tempus.toggleQueryIndicator = function(showSpinner) {
   if (showSpinner) {
     $("#gs-run-spinner .gs-spinner-icon").show();
     $("#gs-run-spinner .gs-spinner-text").hide();
@@ -228,15 +234,17 @@ $(function () {
 
   $('.dropdown-toggle').dropdown();
 
+  $('#gs-select-covar').multiselect();
+
   $("#gs-run-spinner .gs-spinner-icon").hide();
   $("#spinner .gs-spinner-icon").hide();
   $("#spinner .gs-spinner-text").hide();
 
   // Event handlers
   $( "#gs-select-form" ).submit(function( event ) {
-    tempus.toggleRunSpinner(true);
-    tempus.getTimeSeries($("#gs-select-location").text(), function() {
-      tempus.toggleRunSpinner(false);
+    tempus.toggleQueryIndicator(true);
+    tempus.getTimeSeries($("#gs-select-location").text(), $("#gs-select-covar").text(), function() {
+      tempus.toggleQueryIndicator(false);
     });
 
     return false;

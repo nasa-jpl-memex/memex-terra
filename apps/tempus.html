@@ -17,7 +17,9 @@
     <link rel="stylesheet" href="../src/main.css">
     <script type="text/javascript" src="../src/bower_components/moment/moment.js"></script>
     <script type="text/javascript" src="../src/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
-     <link rel="stylesheet" href="../src/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css" />
+    <script type="text/javascript" src="../src/js/bootstrap-multiselect.js"></script>
+    <link rel="stylesheet" href="../src/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css" />
+    <link rel="stylesheet" href="../src/css/bootstrap-multiselect.css" type="text/css"/>
 </head>
 <body>
     <div>
@@ -37,7 +39,7 @@
     </div>
     <div class="container-fluid gs-fill">
             <ul class="nav nav-tabs gs-tabs">
-              <li role="presentation"><a href="#">Home</a></li>
+              <li role="presentation"><a href="../">Home</a></li>
               <li role="presentation" class="active"><a href="tempus.html">Tempus</a></li>
             </ul>
             <div class="row">
@@ -60,6 +62,9 @@
                             </div>
                             <label for="sel1">Location</label>
                             <select class="form-control" id="gs-select-location">
+                            </select>
+                            <label for="sel1">Covariants</label>
+                            <select class="form-control" id="gs-select-covar">
                             </select>
                             <div id="gs-run-spinner" class="gs-display-inline">
                                 <button class="btn btn-primary gs-spinner-icon">
