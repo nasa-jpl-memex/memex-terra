@@ -1,6 +1,8 @@
 // Tempus Application
 var tempus = {};
 
+tempus.useCache = true;
+
 tempus.map = null;
 $( window ).resize(function() {
     tempus.resize();
@@ -29,38 +31,74 @@ tempus.resize = function() {
 };
 tempus.resize();
 
+tempus.ajax = function(options, useCache) {
+    // this assumes options.url and options.data exist
+    var cachedRequest = localStorage.getItem(options.url + JSON.stringify(options.data));
+
+    if (useCache && cachedRequest && options.hasOwnProperty('success')) {
+        options.success(JSON.parse(cachedRequest));
+    } else {
+        if (options.hasOwnProperty('success')) {
+            var successCallback = options.success;
+        }
+
+        options.success = function(data) {
+            localStorage.setItem(options.url + JSON.stringify(options.data), JSON.stringify(data));
+
+            if (successCallback) {
+                successCallback(data);
+            }
+        };
+
+        // Perform ajax call with caching wrapped around success callback
+        $.ajax(options);
+    }
+};
+
 //--------------------------------------------------------------------------
 tempus.getTimeSeries = function(targetLocation, covars, callback) {
-    console.log(targetLocation);
+    var args = {
+        table: "escort_ads",
+        sort: 1,
+        response_col: "price_per_hour",
+        group_col: "msaname",
+        group: targetLocation
+    };
 
-    // Hard-coded for now
-    $.ajax({
-        url: "http://cors-anywhere.herokuapp.com/http://tempus-demo.ngrok.com/"+
-            "api/series?table=escort_ads&sort=1&response_col=price_per_hour&"+
-            "group_col=msaname&group="+targetLocation,
-        // Work with the response
-        success: function( data ) {
-            $.ajax({
-                url: "http://cors-anywhere.herokuapp.com/"+
-                    "http://tempus-demo.ngrok.com/api/comparison?table="+
-                    "escort_ads&sort=1&response_col=price_per_hour&group_col="+
-                    "msaname&group="+targetLocation+"&covs="+covars,
+    tempus.ajax({
+        url: "http://cors-anywhere.herokuapp.com/http://tempus-demo.ngrok.com/api/series",
+        data: args,
+        success: function(data) {
+            if (covars !== undefined) {
+                args.covs = covars;
+            }
+
+            tempus.ajax({
+                url: "http://cors-anywhere.herokuapp.com/http://tempus-demo.ngrok.com/api/comparison",
+                data: args,
                 success: function( compData ) {
                     tempus.timeSeries( data, compData );
                     if (callback) {
                         callback();
                     }
+                },
+                error: function(obj, type) {
+                    if (type === 'error') {
+                        alert(obj['responseText']);
+                    }
                 }
-            });
+            }, tempus.useCache);
         }
-    });
+    }, tempus.useCache);
 };
 
 tempus.getLocations = function(callback) {
-    $.ajax({
-        url: "http://cors-anywhere.herokuapp.com/https://tempus-demo.ngrok.com/"+
-            "api/groups?table=escort_ads&group_col=msaname",
-        // Work with the response
+    tempus.ajax({
+        url: "http://cors-anywhere.herokuapp.com/https://tempus-demo.ngrok.com/api/groups",
+        data: {
+            table: "escort_ads",
+            group_col: "msaname"
+        },
         success: function( data ) {
             var locations = data, i = null;
             for (i = 0; i < locations.msaname.length; ++i) {
@@ -71,7 +109,7 @@ tempus.getLocations = function(callback) {
                 callback();
             }
         }
-    });
+    }, tempus.useCache);
 };
 
 // Create statistical plot
@@ -220,13 +258,63 @@ tempus.toggleQueryIndicator = function(showSpinner) {
     }
 };
 
+tempus.findFeature = function(msaArea) {
+    for (var i = 0; i < tempus.msa.features.length; i++) {
+        if (tempus.msa.features[i].properties.NAME == msaArea) {
+            return {
+                type: 'FeatureCollection',
+                features: [tempus.msa.features[i]]
+            };
+        }
+    }
+
+    return {};
+};
+
+tempus.drawMsaBoundary = function() {
+    var msaArea = $('#gs-select-location option:selected').text().replace(/ MSA$/, '');
+
+    // Load MSA Boundaries
+    tempus.ajax({
+        url: 'data.json',
+        data: {},
+        async: false,
+        success: function(data) {
+            tempus.msa = data;
+        }
+    }, true);
+
+    // Clear existing boundaries
+    if (tempus.featureLayer !== undefined) {
+        tempus.featureLayer.clear();
+    } else {
+        tempus.featureLayer = tempus.map.createLayer('feature');
+    }
+
+    tempus.map.draw();
+
+    var reader = geo.createFileReader('jsonReader', {'layer': tempus.featureLayer});
+
+    if (tempus.msa === undefined) {
+        alert('MSA not found');
+    }
+
+    var feature = tempus.findFeature(msaArea);
+
+    reader.read(JSON.stringify(feature), function() {
+        tempus.map.draw();
+    });
+};
+
 //--------------------------------------------------------------------------
 $(function () {
     'use strict';
 
-    // tempus.getLocations(function() {
-    //   tempus.getTimeSeries($("#gs-select-location").text());
-    // });
+    tempus.getLocations(function() {
+        tempus.getTimeSeries($("#gs-select-location").text());
+    });
+
+    $('#gs-select-location').change(tempus.drawMsaBoundary);
 
     $('#datetimepicker1').datetimepicker();
 
