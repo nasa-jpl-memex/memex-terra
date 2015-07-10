@@ -12094,7 +12094,7 @@ vgl.DataBuffers = function (initialSize) {
                     this.subquery (result, box, start, current - 1, parseInt ((start + (current - 1)) / 2, 10));
             }
         };
-        
+
         this.search = function (result, box) {
             if (xrange (box)) {
                 this.subquery (result, box, 0, this.subtree.length - 1, parseInt ((this.subtree.length - 1) / 2, 10));
@@ -12183,7 +12183,7 @@ vgl.DataBuffers = function (initialSize) {
         this.width = function () {
             return this.max.x - this.min.x;
         };
-        
+
         this.vertex = function (index) {
             switch (index) {
             case 0:
@@ -12298,7 +12298,7 @@ vgl.DataBuffers = function (initialSize) {
             return this;
         };
         this.clone = function () {
-            return new Vector2D (this.x, this.y); 
+            return new Vector2D (this.x, this.y);
         };
 
         this.array = function () {
@@ -12364,7 +12364,7 @@ vgl.DataBuffers = function (initialSize) {
 
         if (denom === 0)
             return Infinity;
-        
+
         var num_s = a.x * (d.y - c.y) +
             c.x * (a.y - d.y) +
             d.x * (c.y - a.y);
@@ -12374,7 +12374,7 @@ vgl.DataBuffers = function (initialSize) {
                       b.x * (a.y - c.y) +
                       c.x * (b.y - a.y));
         var t = num_t / denom;
-        
+
         return t;
     };
 
@@ -12386,7 +12386,7 @@ vgl.DataBuffers = function (initialSize) {
 
         if (denom === 0)
             return Infinity;
-        
+
         var num_s = a.x * (d.y - c.y) +
             c.x * (a.y - d.y) +
             d.x * (c.y - a.y);
@@ -12396,7 +12396,7 @@ vgl.DataBuffers = function (initialSize) {
                       b.x * (a.y - c.y) +
                       c.x * (b.y - a.y));
         var t = num_t / denom;*/
-        
+
         var dir = vect.sub (b, a);
         dir.scale (s);
         return vect.add (a, dir);
@@ -15870,6 +15870,9 @@ geo.jsonReader = function (arg) {
     if (geometry.type === 'Polygon') {
       return 'polygon';
     }
+    if (geometry.type === 'MultiPolygon') {
+      return 'multipolygon';
+    }
     return null;
   };
 
@@ -15897,6 +15900,26 @@ geo.jsonReader = function (arg) {
 
     // return an array of latlng's for LineString, MultiPoint, etc...
     return coordinates.map(function (c) {
+      return {
+        x: c[0],
+        y: c[1],
+        z: c[2]
+      };
+    });
+  };
+
+  this._getMultiCoordinates = function (spec) {
+    var geometry = spec.geometry || {},
+        coordinates = geometry.coordinates || [], elv;
+
+    var mergedCoordinates = [];
+
+    for (var i=0; i<coordinates.length; i++) {
+      mergedCoordinates = mergedCoordinates.concat(coordinates[i][0]);
+    }
+
+    // return an array of latlng's for LineString, MultiPoint, etc...
+    return mergedCoordinates.map(function (c) {
       return {
         x: c[0],
         y: c[1],
@@ -15949,6 +15972,20 @@ geo.jsonReader = function (arg) {
               style,
               feature.properties
             ));
+          } else if (type === 'multipolygon') {
+              style.fill = style.fill === undefined ? true : style.fill;
+              style.fillOpacity = (
+                  style.fillOpacity === undefined ? 0.25 : style.fillOpacity
+              );
+
+              coordinates = m_this._getMultiCoordinates(feature);
+
+              allFeatures.push(m_this._addFeature(
+                  'line',
+                  [coordinates],
+                  style,
+                  feature.properties
+              ));
           }
         } else {
           console.log('unsupported feature type: ' + feature.geometry.type);
