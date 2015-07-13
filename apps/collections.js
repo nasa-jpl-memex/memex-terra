@@ -9,9 +9,15 @@ tempus.MsaCollection = Backbone.Collection.extend({
         this.populateDropdown();
     },
 
+    _sortedModels: function() {
+        return this.models.sort(function(a, b) {
+            return a.get('name') < b.get('name') ? -1 : 1;
+        });
+    },
+
     populateDropdown: function() {
-        _.each(this.models, function(model) {
-            if (model.get('shape')) {
+        _.each(this._sortedModels(), function(model) {
+            if (!_.isEmpty(model.get('shape'))) {
                 $("#gs-select-location").append("<option>" + model.get('name'));
             } else {
                 console.log('Skipping MSA ' + model.get('name') + ' (No shape found).');
