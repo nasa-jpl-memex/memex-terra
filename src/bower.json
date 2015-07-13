@@ -1,0 +1,15 @@
+{
+  "name": "geospace",
+  "homepage": "https://github.com/Kitware/SMQTK",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "eonasdan-bootstrap-datetimepicker": "~4.14.30",
+    "backbone": "~1.2.1"
+  }
+}
