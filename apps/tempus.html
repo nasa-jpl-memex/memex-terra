@@ -5,22 +5,9 @@
         <script type="text/template" id="action-form-template">
             <form class="form-inline" id="gs-select-form">
                 <div class="form-group">
-                    <label>Start Time</label>
-                    <div class='input-group date' id='datetimepicker1'>
-                        <input type='text' class="form-control" />
-                        <span class="input-group-addon">
-                            <span class="glyphicon glyphicon-calendar"></span>
-                        </span>
-                    </div>
-                    <label>End Time</label>
-                    <div class='input-group date' id='datetimepicker2'>
-                        <input type='text' class="form-control" />
-                        <span class="input-group-addon">
-                            <span class="glyphicon glyphicon-calendar"></span>
-                        </span>
-                    </div>
                     <label for="sel1">Location</label>
                     <select class="form-control" id="gs-select-location">
+                        <option value="" disabled selected>Location</option>
                     </select>
                     <label for="sel1">Covariants</label>
                     <select class="form-control" id="gs-select-covar" multiple="multiple">
@@ -58,7 +45,6 @@
         <link rel="stylesheet" href="../src/css/bootstrap.min.css">
         <link rel="stylesheet" href="../src/bower_components/bootstrap-multiselect/dist/css/bootstrap-multiselect.css" type="text/css"/>
         <link rel="stylesheet" href="../src/css/font-awesome.min.css">
-        <!-- <link rel="stylesheet" href="src/jquery-ui-1.11.3.custom/jquery-ui.min.css" type="text/css" /> -->
         <link rel="stylesheet" href="//code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css">
         <link rel="stylesheet" href="../src/main.css">
         <script type="text/javascript" src="../src/bower_components/moment/moment.js"></script>
@@ -68,67 +54,16 @@
 
     </head>
     <body>
-        <div>
-            <div class="gs-header-wrapper">
-                <a class="gs-brand" href="#search/*">Memex-Geospace</a>
-                <div class="container-fluid gs-search-form">
-                    <input id="search" type="text" class="form-control" placeholder="Search">
-                </div>
-                <div id="spinner" class="gs-search-indicator">
-                    <button class="btn btn-default gs-spinner-icon">
-                        <span class="spinner"><i class="fa fa-circle-o-notch fa-spin"></i></span>
-                    </button>
-                    <button class="btn btn-default gs-spinner-text">
-                    </button>
-                </div>
-            </div>
-        </div>
         <div class="container-fluid gs-fill">
-            <ul class="nav nav-tabs gs-tabs">
-                <li role="presentation"><a href="../">Home</a></li>
-                <li role="presentation" class="active"><a href="tempus.html">Tempus</a></li>
-            </ul>
             <div class="row">
                 <div id="action-form" class="gs-selection col-md-12"></div>
             </div>
-            <div class="row gs-fill">
+            <div class="row gs-fill" style="margin-top:90px;">
                 <div class="gs-image-space col-md-6">
                     <div id="statistics"></div>
                 </div>
                 <div class="gs-geospace col-md-6">
                     <div id="map"></div>
-                    <!-- <div class="gs-date-display btn btn-primary btn-md">
-                    <div><span id="start"></span></div>
-                    <div><span id="end"></span></div>
-                    </div> -->
-                    <div class="gs-control-center">
-                        <div class="gs-player-panel">
-                            <div class="gs-player container-fluid">
-                                <div class="gs-container">
-                                    <div>
-                                        <button type="button" id="button_bw" class="btn" onclick='myApp.buttonBackPress()'>
-                                            <span class="glyphicon glyphicon-backward" aria-hidden="true"></span>
-                                        </button>
-
-                                        <button type="button" id="button_play" class="btn" onclick='myApp.buttonPlayPress()'>
-                                            <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
-                                        </button>
-
-                                        <button type="button" id="button_stop" class="btn" onclick='myApp.buttonStopPress()'>
-                                            <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
-                                        </button>
-
-                                        <button type="button" id="button_fw" class="btn" onclick='myApp.buttonForwardPress()'>
-                                            <span class="glyphicon glyphicon-forward" aria-hidden="true"></span>
-                                        </button>
-                                    </div>
-                                    <div class="gs-slider gs-inilne-block">
-                                        <div id="slider"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
