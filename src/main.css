@@ -17,15 +17,6 @@ body {
   overflow-y: auto;
 }
 
-footer {
-  padding: 30px 0;
-}
-
-.gs-fill-vertical {
-    width: 100%;
-    height: 100%;
-}
-
 .gs-geospace {
   top: 145px;
   height: 100%;
@@ -33,145 +24,9 @@ footer {
   padding: 0px;
 }
 
-.gs-tabs {
-  margin-top: 54px;
-  background: white;
-}
-
-.gs-image-space {
-  top: 54px;
-  height: 100%;
-  margin: 0px;
-  padding: 0px;
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-
-.dialog-box {
-  width: 300px;
-  height: 200px;
-  position: absolute;
-  overflow: auto;
-  opacity: 0.9;
-  background: #eee;
-  word-wrap: break-word;
-  z-index: 300;
-}
-
-
-#images {
-  padding: 15px;
-}
-
-.img-fluid {
-  width: 90%;
-  padding: 15px;
-  margin: 15px;
-  background: lightgray;
-  border-radius: 10px;
-}
-
-.hd-highlight {
-  background: black;
-  color: white;
-}
-
-.img-blur {
-  -webkit-filter: blur(5px);
-}
-
-.img-clear {
-  -webkit-filter: none;
-}
-
-.gs-header-wrapper {
-  background-color: #474747;
-  height: 54px;
-  padding-left: 20px;
-  padding-right: 20px;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 10;
-}
-
-.gs-brand {
-  float: left;
-  padding-top: 15px;
-  padding-bottom: 10px;
-  font-size: 20px;
-}
-
-.gs-search-form {
-  float: left;
-  width: 70%;
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-
-.gs-search-indicator {
-  float: left;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  color: white;
-}
-
-.gs-date-display {
-  background-color: #474747;
-  color: white;
-  left: 0%;
-  top: 128px;
-  padding-left: 20px;
-  padding-right: 20px;
-  position: fixed;
-  margin-left: 10px;
-  font-family: "Courier New", Courier, monospace;
-}
-
 .gs-selection {
   position: fixed;
   padding-top: 5px;
-}
-
-.gs-select-location {
-  position: fixed;
-}
-
-.gs-player-panel {
-  width: 70%;
-  left: 0%;
-  bottom: 10px;
-  margin-left: 0px;
-  margin-right: 0px;
-  padding-left: 0px;
-  padding-right: 20px;
-  position: fixed;
-  opacity: 0.8;
-}
-
-.gs-form {
-  opacity: 1.0;
-}
-
-.gs-slider {
-  flex-grow: 4;
-  margin-top: 10px;
-  padding-left: 20px;
-  padding-right: 20px;
-}
-
-.gs-inilne-block {
-  display: inline-block;
-}
-
-.gs-container {
-  display: flex;
-  flex-direction: row;
-}
-
-.gs-player {
-  top: 90%;
-  bottom: 0%;
 }
 
 .gs-fill {
@@ -184,4 +39,23 @@ a {
 
 .gs-display-inline {
   display: inline;
+}
+
+#diff-and-diff-overlay {
+    position:absolute;
+    top:260px;
+    left:70px;
+
+    background-color: #ffffff;
+    z-index: 999;
+
+    height: 65%;
+    width: 40%;
+
+    opacity: .8;
+
+    display:none;
+
+
+    border: 2px solid #4d4d4d;
 }

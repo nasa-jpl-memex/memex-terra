@@ -198,7 +198,7 @@ tempus.DiffAndDiffView = Backbone.View.extend({
         // Transition/Focus/Zoom on map boundaries
         tempus.map.transition({
             center: {
-                x: (minX + maxX) / 2,
+                x: ((minX + maxX) / 2) - 8, // @todo this is a static shift to the left for styling purposes
                 y: (minY + maxY) / 2
             },
             duration: 2000
@@ -250,8 +250,8 @@ tempus.DiffAndDiffView = Backbone.View.extend({
             });
         });
 
-        tempus.spec.width = $("#statistics").width() * 0.85;
-        tempus.spec.height = $("#statistics").height();
+        tempus.spec.width = $("#diff-and-diff-overlay").width() * 0.85;
+        tempus.spec.height = $("#diff-and-diff-overlay").height();
         tempus.spec.data[0].values = cleanData;
 
         if (clearPrev) {
@@ -260,8 +260,10 @@ tempus.DiffAndDiffView = Backbone.View.extend({
 
         vg.parse.spec(tempus.spec, function(chart) {
             chart({
-                el:"#statistics"
+                el: "#diff-and-diff-overlay"
             }).update();
+
+            $('#diff-and-diff-overlay').css('display', 'block');
         });
     }
 });
