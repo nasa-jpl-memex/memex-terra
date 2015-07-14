@@ -184,12 +184,6 @@ tempus.DiffAndDiffView = Backbone.View.extend({
     },
 
     focus: function (msaModel, similarModels) {
-        if (_.contains(_.invoke([msaModel].concat(similarModels), 'get', 'type'),
-                       'MultiPolygon')) {
-            console.log('Focusing currently unsupported for MultiPolygon models.');
-            return;
-        }
-
         var minsMaxes = tempus.Msa.prototype.
                 boundingBox.apply(msaModel,
                                   this.tsCompData.groups.map(function(g) {

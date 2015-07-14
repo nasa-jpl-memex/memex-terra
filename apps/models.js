@@ -23,9 +23,16 @@ tempus.Msa = Backbone.Model.extend({
         // coordinates to traverse
     },
 
+    // @todo this needs to be simplified and documented
     mergedCoordinates: function() {
-        // Returns all the coordinates of an Msas shape in a single array
-        return this.get('geometry').coordinates.reduce(function(a, b) {
+        // Returns all the coordinates of an Msas shape(s) in a single array
+        var reduction = this.get('geometry').coordinates;
+
+        if (reduction.length > 1) {
+            reduction = _.flatten(reduction);
+        }
+
+        return reduction.reduce(function(a, b) {
             return a.concat(b);
         }, []);
     },
