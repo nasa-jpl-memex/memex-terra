@@ -4,19 +4,14 @@ tempus.FormView = Backbone.View.extend({
     el: '#action-form',
 
     events: {
-        'change #gs-select-location': 'selectMsa',
         'submit #gs-select-form': 'runDiffAndDiff'
-    },
-
-    selectMsa: function(event) {
-        this.createMsaView($(event.currentTarget).find('option:selected').text());
     },
 
     createMsaView: function(msaName) {
         var msaModel = tempus.msaCollection.get(msaName);
 
         if (msaName && msaModel) {
-            var view = new tempus.MsaView({
+            new tempus.MsaView({
                 model: msaModel
             });
         }
@@ -35,6 +30,10 @@ tempus.FormView = Backbone.View.extend({
                 _this.covars.push($this.text());
             }
         });
+
+        tempus.mapView.clearFeatureLayers();
+
+        this.createMsaView($('#gs-select-location option:selected').text());
 
         var dd = new tempus.DiffAndDiffView({
             location: location,
@@ -78,12 +77,20 @@ tempus.FormView = Backbone.View.extend({
 
 tempus.MapView = Backbone.View.extend({
     el: '#map',
+    featureLayers: [],
 
     initialize: function() {
         this.render();
     },
 
+    clearFeatureLayers: function() {
+        _.each(this.featureLayers, function(layer) {
+            layer.clear();
+        });
+    },
+
     render: function() {
+        // @todo tempus.map should belong to the mapView
         tempus.map = geo.map({
             node: this.el,
             center: {
@@ -165,147 +172,43 @@ tempus.DiffAndDiffView = Backbone.View.extend({
         // @todo setup a series model?
         this.fetchTimeSeriesData(location, covars);
 
-
         // render similar groups boundaries
         _.each(this.tsCompData.groups, function(group) {
             tempus.formView.createMsaView(group.replace(/ MSA$/, ''));
         });
 
         var clearPrev = false;
+        var cleanData = [];
 
-        // @todo move this into a template file
+        _.each(this.tsData.result, function(datum) {
+            cleanData.push({
+                date: datum[0],
+                value: datum[1],
+                symbol: 'raw'
+            });
+        });
 
-        var cleanData = [], i = null;
-        var data = this.tsData;
-        var compData = this.tsCompData;
+        _.each(this.tsCompData.result, function(datum) {
+            cleanData.push({
+                date: datum[0],
+                value: datum[1],
+                symbol: 'comp'
+            });
+        });
 
-
-
-
-        // Prepare data
-        for (i = 0; i < data.result.length; ++i) {
-            cleanData.push({"date": data.result[i][0], "value": data.result[i][1], "symbol": "raw"});
-        }
-
-        for (i = 0; i < data.result.length; ++i) {
-            cleanData.push({"date": data.result[i][0], "value": data.result[i][1], "symbol": "comp"});
-        }
-
-        var spec = {
-            "width": $("#statistics").width() * 0.90,
-            "height": $("#statistics").height(),
-            "padding": {"top": 10, "left": 30, "bottom": 30, "right": 30},
-            "data": [
-                {
-                    "name": "table",
-                    "format": {"type":"json", "parse":{"date":"date", "value":"number"}},
-                    "values": cleanData
-                }
-            ],
-            "scales": [
-                {
-                    "name": "x",
-                    "type": "time",
-                    "range": "width",
-                    "nice": true,
-                    "domain": {"data": "table", "field": "data.date"}
-                },
-                {
-                    "name": "y",
-                    "type": "linear",
-                    "range": "height",
-                    "nice": true,
-                    "domain": {"data": "table", "field": "data.value"}
-                },
-                {
-                    "name": "color", "type": "ordinal", "range": "category10"
-                }
-            ],
-            "axes": [
-                {"type": "x", "scale": "x"},
-                {"type": "y", "scale": "y"}
-            ],
-            "marks": [
-                {
-                    "type": "group",
-                    "from": {
-                        "data": "table",
-                        "transform": [{"type": "facet", "keys": ["data.symbol"]}]
-                    },
-                    "marks": [
-                        {
-                            "type": "line",
-                            "properties": {
-                                "enter": {
-                                    "interpolate": {"value": "monotone"},
-                                    "x": {"scale": "x", "field": "data.date"},
-                                    "y": {"scale": "y", "field": "data.value"},
-                                    "size": {"value": 50},
-                                    "stroke": {"scale": "color", "field": "data.symbol"},
-                                    "strokeWidth": {"value": 2}
-                                },
-                                "update": {
-                                    "opacity": {"value": 1}
-                                },
-                                "hover": {
-                                    "opacity": {"value": 0.5}
-                                }
-                            }
-                        },
-                        {
-                            "type": "symbol",
-                            "from": {"data": "table"},
-                            "properties": {
-                                "enter": {
-                                    "interpolate": {"value": "monotone"},
-                                    "x": {"scale": "x", "field": "data.date"},
-                                    "y": {"scale": "y", "field": "data.value"},
-                                    "size": {"value": 50},
-                                    "fill": {
-                                        "scale": "color", "field": "data.symbol"
-                                    },
-                                    "strokeWidth": {"value": 2}
-                                },
-                                "update": {
-                                    "opacity": {"value": 1}
-                                },
-                                "hover": {
-                                    "opacity": {"value": 0.5}
-                                }
-                            }
-                        },
-                        {
-                            "type": "text",
-                            "from": {
-                                "transform": [{"type": "filter", "test": "index==data.length-1"}]
-                            },
-                            "properties": {
-                                "enter": {
-                                    "x": {"scale": "x", "field": "data.date", "offset": 40},
-                                    "y": {"scale": "y", "field": "data.value"},
-                                    "fill": {"scale": "color", "field": "data.symbol"},
-                                    "text": {"field": "data.symbol"},
-                                    "baseline": {"value": "middle"}
-                                }
-                            }
-                        }
-                    ]
-                }
-            ]
-        };
+        tempus.spec.width = $("#statistics").width() * 0.90;
+        tempus.spec.height = $("#statistics").height();
+        tempus.spec.data[0].values = cleanData;
 
         if (clearPrev) {
             $("#statistics").empty();
         }
 
-        try {
-            vg.parse.spec(spec, function(chart) {
-                var view = chart({el:"#statistics"})
-                        .update();
-            });
-        } catch(err) {
-        }
-
+        vg.parse.spec(tempus.spec, function(chart) {
+            chart({
+                el:"#statistics"
+            }).update();
+        });
     }
 });
 
@@ -315,17 +218,12 @@ tempus.MsaView = Backbone.View.extend({
     },
 
     render: function(options) {
-        var clearLayer = options.clearLayer || false;
-
-        if (tempus.featureLayer !== undefined && clearLayer) {
-            tempus.featureLayer.clear();
-        } else {
-            tempus.featureLayer = tempus.map.createLayer('feature');
-        }
+        var layerIdx = tempus.mapView.featureLayers.push(tempus.map.createLayer('feature'));
+        var layer = tempus.mapView.featureLayers[layerIdx - 1];
 
         tempus.map.draw();
 
-        var reader = geo.createFileReader('jsonReader', {'layer': tempus.featureLayer});
+        var reader = geo.createFileReader('jsonReader', {'layer': layer});
         reader.read(JSON.stringify(this.model.get('shape')), function() {
             tempus.map.draw();
         });
