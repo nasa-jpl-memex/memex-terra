@@ -11,6 +11,7 @@
   "dependencies": {
     "eonasdan-bootstrap-datetimepicker": "~4.14.30",
     "backbone": "~1.2.1",
-    "bootstrap-multiselect": "~0.9.13"
+    "bootstrap-multiselect": "~0.9.13",
+    "lodash": "~3.10.0"
   }
 }

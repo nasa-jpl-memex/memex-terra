@@ -153,10 +153,16 @@ tempus.DiffAndDiffView = Backbone.View.extend({
                     },
                     async: false,
                     success: function(compData) {
-                        _this.tsCompData = JSON.parse(compData);
-                        if (_this.tsCompData.hasOwnProperty('error')) {
+                        compData = JSON.parse(compData);
+                        if (compData.hasOwnProperty('error')) {
                             alert('error');
                         }
+
+                        compData.groups = _.map(compData.groups, function(s) {
+                            return s.replace(/ MSA$/, '');
+                        });
+
+                        _this.tsCompData = compData;
                     },
                     error: function(a, b, c) {
                         alert('error');
@@ -169,18 +175,55 @@ tempus.DiffAndDiffView = Backbone.View.extend({
         });
     },
 
-    render: function(location, covars) {
+    focus: function (msaModel, similarModels) {
+        if (_.contains(_.invoke([msaModel].concat(similarModels), 'get', 'type'),
+                       'MultiPolygon')) {
+            console.log('Focusing currently unsupported for MultiPolygon models.');
+            return;
+        }
+
+        var minsMaxes = tempus.Msa.prototype.
+                boundingBox.apply(msaModel,
+                                  this.tsCompData.groups.map(function(g) {
+                                      return tempus.msaCollection.get(g);
+                                  }));
+
+        var minX = minsMaxes[0][0],
+            maxX = minsMaxes[0][1],
+            minY = minsMaxes[1][0],
+            maxY = minsMaxes[1][1];
+
+        // Transition/Focus/Zoom on map boundaries
+        tempus.map.transition({
+            center: {
+                x: (minX + maxX) / 2,
+                y: (minY + maxY) / 2
+            },
+            duration: 2000
+        });
+    },
+
+    render: function(location, covars, callback) {
+        var msaModel = tempus.msaCollection.get(location),
+            similarModels = [];
+
         // @todo setup a series model?
         this.fetchTimeSeriesData(location, covars);
 
-        // render similar groups boundaries
-        _.each(this.tsCompData.groups, function(group) {
-            tempus.formView.createMsaView(group.replace(/ MSA$/, ''),
+        similarModels = _.map(this.tsCompData.groups, function(group) {
+            return tempus.msaCollection.get(group);
+        });
+
+        // render similar models boundaries
+        _.each(similarModels, function(model) {
+            tempus.formView.createMsaView(model.get('name'),
                                           function(shape) {
                                               shape.features[0].properties.strokeColor = '#666666';
                                               return shape;
                                           });
         });
+
+        this.focus(msaModel, similarModels);
 
         var clearPrev = false;
         var cleanData = [];
@@ -201,7 +244,7 @@ tempus.DiffAndDiffView = Backbone.View.extend({
             });
         });
 
-        tempus.spec.width = $("#statistics").width() * 0.90;
+        tempus.spec.width = $("#statistics").width() * 0.85;
         tempus.spec.height = $("#statistics").height();
         tempus.spec.data[0].values = cleanData;
 

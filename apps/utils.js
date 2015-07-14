@@ -15,7 +15,9 @@ tempus.ajax = function(options, useCache) {
 
             options.success = function(data) {
                 try {
-                    localStorage.setItem(options.url + JSON.stringify(options.data), JSON.stringify(data));
+                    if (!data.error) {
+                        localStorage.setItem(options.url + JSON.stringify(options.data), JSON.stringify(data));
+                    }
                 } catch (e) {}
 
                 if (successCallback) {

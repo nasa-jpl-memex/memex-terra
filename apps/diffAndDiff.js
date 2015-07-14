@@ -16,14 +16,12 @@ tempus.spec = {
             "name": "x",
             "type": "time",
             "range": "width",
-            "nice": true,
             "domain": {"data": "table", "field": "data.date"}
         },
         {
             "name": "y",
             "type": "linear",
             "range": "height",
-            "nice": true,
             "domain": {"data": "table", "field": "data.value"}
         },
         {
