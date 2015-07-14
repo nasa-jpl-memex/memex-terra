@@ -7,12 +7,13 @@ tempus.FormView = Backbone.View.extend({
         'submit #gs-select-form': 'runDiffAndDiff'
     },
 
-    createMsaView: function(msaName) {
+    createMsaView: function(msaName, shapeFilter) {
         var msaModel = tempus.msaCollection.get(msaName);
 
         if (msaName && msaModel) {
             new tempus.MsaView({
-                model: msaModel
+                model: msaModel,
+                shapeFilter: shapeFilter
             });
         }
     },
@@ -174,7 +175,11 @@ tempus.DiffAndDiffView = Backbone.View.extend({
 
         // render similar groups boundaries
         _.each(this.tsCompData.groups, function(group) {
-            tempus.formView.createMsaView(group.replace(/ MSA$/, ''));
+            tempus.formView.createMsaView(group.replace(/ MSA$/, ''),
+                                          function(shape) {
+                                              shape.features[0].properties.strokeColor = '#666666';
+                                              return shape;
+                                          });
         });
 
         var clearPrev = false;
@@ -220,11 +225,18 @@ tempus.MsaView = Backbone.View.extend({
     render: function(options) {
         var layerIdx = tempus.mapView.featureLayers.push(tempus.map.createLayer('feature'));
         var layer = tempus.mapView.featureLayers[layerIdx - 1];
+        var shape = this.model.get('shape');
+
+        // Let the user override certain properties.
+        // Specifically for styling of individual MSAs on individual analyses
+        if (options.shapeFilter) {
+            shape = options.shapeFilter(shape);
+        }
 
         tempus.map.draw();
 
         var reader = geo.createFileReader('jsonReader', {'layer': layer});
-        reader.read(JSON.stringify(this.model.get('shape')), function() {
+        reader.read(JSON.stringify(shape), function() {
             tempus.map.draw();
         });
     }
