@@ -34,7 +34,11 @@ tempus.FormView = Backbone.View.extend({
 
         tempus.mapView.clearFeatureLayers();
 
-        this.createMsaView($('#gs-select-location option:selected').text());
+        this.createMsaView($('#gs-select-location option:selected').text(),
+                           function(shape) {
+                               shape.features[0].properties.strokeColor = '#1f77b4';
+                               return shape;
+                           });
 
         var dd = new tempus.DiffAndDiffView({
             location: location,
@@ -88,6 +92,8 @@ tempus.MapView = Backbone.View.extend({
         _.each(this.featureLayers, function(layer) {
             layer.clear();
         });
+
+        tempus.mapView.featureLayers = [];
     },
 
     render: function() {
@@ -155,12 +161,14 @@ tempus.DiffAndDiffView = Backbone.View.extend({
                     success: function(compData) {
                         compData = JSON.parse(compData);
                         if (compData.hasOwnProperty('error')) {
-                            alert('error');
+                            alert('No results found.');
                         }
 
                         compData.groups = _.map(compData.groups, function(s) {
                             return s.replace(/ MSA$/, '');
                         });
+
+                        console.log('MSA is similar to: ' + compData.groups.join(', '));
 
                         _this.tsCompData = compData;
                     },
@@ -216,11 +224,15 @@ tempus.DiffAndDiffView = Backbone.View.extend({
 
         // render similar models boundaries
         _.each(similarModels, function(model) {
-            tempus.formView.createMsaView(model.get('name'),
-                                          function(shape) {
-                                              shape.features[0].properties.strokeColor = '#666666';
-                                              return shape;
-                                          });
+            if (!_.isEmpty(model.get('shape'))) {
+                tempus.formView.createMsaView(model.get('name'),
+                                              function(shape) {
+                                                  shape.features[0].properties.strokeColor = '#ff7f0e';
+                                                  return shape;
+                                              });
+            } else {
+                console.log('MSA ' + location  + 'has no shape, skipping.');
+            }
         });
 
         this.focus(msaModel, similarModels);
