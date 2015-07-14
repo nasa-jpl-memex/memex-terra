@@ -15908,26 +15908,6 @@ geo.jsonReader = function (arg) {
     });
   };
 
-  this._getMultiCoordinates = function (spec) {
-    var geometry = spec.geometry || {},
-        coordinates = geometry.coordinates || [], elv;
-
-    var mergedCoordinates = [];
-
-    for (var i=0; i<coordinates.length; i++) {
-      mergedCoordinates = mergedCoordinates.concat(coordinates[i][0]);
-    }
-
-    // return an array of latlng's for LineString, MultiPoint, etc...
-    return mergedCoordinates.map(function (c) {
-      return {
-        x: c[0],
-        y: c[1],
-        z: c[2]
-      };
-    });
-  };
-
   this._getStyle = function (spec) {
     return spec.properties;
   };
