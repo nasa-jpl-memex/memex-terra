@@ -15978,11 +15978,19 @@ geo.jsonReader = function (arg) {
                   style.fillOpacity === undefined ? 0.25 : style.fillOpacity
               );
 
-              coordinates = m_this._getMultiCoordinates(feature);
+              coordinates = feature.geometry.coordinates.map(function(c) {
+                  return c[0].map(function(el) {
+                      return {
+                          x: el[0],
+                          y: el[1],
+                          z: el[2]
+                      };
+                  });
+              });
 
               allFeatures.push(m_this._addFeature(
                   'line',
-                  [coordinates],
+                  coordinates,
                   style,
                   feature.properties
               ));
