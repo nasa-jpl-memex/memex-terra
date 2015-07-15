@@ -25,6 +25,31 @@ tempus.MsaCollection = Backbone.Collection.extend({
         });
     },
 
+    aggregateBoundingBox: function(msaModels) {
+        /**
+         * Gathers the bounding boxes of msaModels and computes
+         * a parent bounding box.
+         **/
+        var boundingBoxes = _.invoke(msaModels, 'getBoundingBox');
+        var firstBoundingBox = _.first(boundingBoxes);
+        var minX = firstBoundingBox[0][0],
+            maxX = firstBoundingBox[0][1],
+            minY = firstBoundingBox[1][0],
+            maxY = firstBoundingBox[1][1];
+
+        _.each(_.rest(boundingBoxes), function(boundingBox) {
+            minX = (minX < boundingBox[0][0]) ? minX : boundingBox[0][0];
+            maxX = (maxX > boundingBox[0][1]) ? maxX : boundingBox[0][1];
+            minY = (minY < boundingBox[1][0]) ? minY : boundingBox[1][0];
+            maxY = (maxY > boundingBox[1][1]) ? maxY : boundingBox[1][1];
+        });
+
+        return [
+            [minX, maxX],
+            [minY, maxY]
+        ];
+    },
+
     fetch: function() {
         var _this = this;
         this.msanames = [];

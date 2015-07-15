@@ -61,7 +61,6 @@ tempus.FormView = Backbone.View.extend({
         tempus.ajax({
             url: 'https://tempus-demo.ngrok.com/api',
             async: false,
-            data: {},
             dataType: 'json',
             success: function(data) {
                 $.each(data.escort_ads.covariates, function(_, covar) {
@@ -141,12 +140,9 @@ tempus.DiffAndDiffView = Backbone.View.extend({
                 group: location + ' MSA' // @todo should we ever strip this out?
             },
             async: false,
+            dataType: 'json',
             success: function(data) {
-                _this.tsData = JSON.parse(data); // @Todo get this to be received as json
-
-                if (_this.tsData.hasOwnProperty('error')) {
-                    alert('error');
-                }
+                _this.tsData = data;
 
                 tempus.ajax({
                     url: 'https://tempus-demo.ngrok.com/api/comparison',
@@ -159,12 +155,8 @@ tempus.DiffAndDiffView = Backbone.View.extend({
                         covs: covars
                     },
                     async: false,
+                    dataType: 'json',
                     success: function(compData) {
-                        compData = JSON.parse(compData);
-                        if (compData.hasOwnProperty('error')) {
-                            alert('No results found.');
-                        }
-
                         compData.groups = _.map(compData.groups, function(s) {
                             return s.replace(/ MSA$/, '');
                         });
@@ -172,37 +164,18 @@ tempus.DiffAndDiffView = Backbone.View.extend({
                         console.log('MSA is similar to: ' + compData.groups.join(', '));
 
                         _this.tsCompData = compData;
-                    },
-                    error: function(a, b, c) {
-                        alert('error');
                     }
                 });
-            },
-            error: function(a, b, c) {
-                alert('error');
             }
         });
     },
 
     focus: function (msaModel, similarModels) {
-        var minsMaxes = tempus.Msa.prototype.
-                boundingBox.apply(msaModel,
-                                  this.tsCompData.groups.map(function(g) {
-                                      return tempus.msaCollection.get(g);
-                                  }));
+        var minsMaxes = tempus.msaCollection.aggregateBoundingBox([msaModel].concat(similarModels));
 
-        var minX = minsMaxes[0][0],
-            maxX = minsMaxes[0][1],
-            minY = minsMaxes[1][0],
-            maxY = minsMaxes[1][1];
-
-        // Transition/Focus/Zoom on map boundaries
-        tempus.map.transition({
-            center: {
-                x: ((minX + maxX) / 2) - 8, // @todo this is a static shift to the left for styling purposes
-                y: (minY + maxY) / 2
-            },
-            duration: 2000
+        tempus.map.bounds({
+            lowerLeft: [minsMaxes[0][0], minsMaxes[1][0]],
+            upperRight: [minsMaxes[0][1], minsMaxes[1][1]]
         });
     },
 
