@@ -1,9 +1,23 @@
 var tempus = tempus || {};
 
-// @todo defaults? async:false ? defualt error handling
+tempus.error = function(message) {
+    if (message !== undefined) {
+        console.log(message);
+    } else {
+        console.log('There was an unexpected error.');
+    }
+};
 
 tempus.ajax = function(options, useCache) {
-    // this assumes options.url and options.data exist
+    var ajaxOptionsDefaults = {
+        data: {},
+        async: false,
+        cache: false,
+        error: _.partial(tempus.error, 'An ajax request failed.')
+    };
+
+    options = _.merge(options, ajaxOptionsDefaults);
+
     var cachedRequest = localStorage.getItem(options.url + JSON.stringify(options.data));
     useCache = (useCache === undefined) ? tempus.useCache : false;
 
@@ -15,9 +29,7 @@ tempus.ajax = function(options, useCache) {
 
             options.success = function(data) {
                 try {
-                    if (!data.error) {
-                        localStorage.setItem(options.url + JSON.stringify(options.data), JSON.stringify(data));
-                    }
+                    localStorage.setItem(options.url + JSON.stringify(options.data), JSON.stringify(data));
                 } catch (e) {}
 
                 if (successCallback) {
