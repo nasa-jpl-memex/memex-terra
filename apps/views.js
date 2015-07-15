@@ -32,6 +32,11 @@ tempus.FormView = Backbone.View.extend({
             }
         });
 
+        if (_.isEmpty(covars)) {
+            tempus.error('No covariables selected.');
+            return;
+        }
+
         tempus.mapView.clearFeatureLayers();
 
         this.createMsaView($('#gs-select-location option:selected').text(),
@@ -53,10 +58,6 @@ tempus.FormView = Backbone.View.extend({
 
     render: function() {
         this.$el.html(_.template($('#action-form-template').html(), {}));
-
-        $('#datetimepicker1').datetimepicker();
-        $('#datetimepicker2').datetimepicker();
-        $('.dropdown-toggle').dropdown();
 
         tempus.ajax({
             url: 'https://tempus-demo.ngrok.com/api',
