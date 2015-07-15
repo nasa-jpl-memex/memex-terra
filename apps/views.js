@@ -37,7 +37,7 @@ tempus.FormView = Backbone.View.extend({
         this.createMsaView($('#gs-select-location option:selected').text(),
                            function(shape) {
                                shape.features[0].properties.strokeColor = '#1f77b4';
-                               shape.features[0].properties.strokeWidth = 4;
+                               shape.features[0].properties.strokeWidth = 3;
                                return shape;
                            });
 
@@ -171,11 +171,14 @@ tempus.DiffAndDiffView = Backbone.View.extend({
     },
 
     focus: function (msaModel, similarModels) {
+        var X_SHIFT = function(xCoord) {
+            return xCoord - 3;
+        };
         var minsMaxes = tempus.msaCollection.aggregateBoundingBox([msaModel].concat(similarModels));
 
         tempus.map.bounds({
-            lowerLeft: [minsMaxes[0][0], minsMaxes[1][0]],
-            upperRight: [minsMaxes[0][1], minsMaxes[1][1]]
+            lowerLeft: [X_SHIFT(minsMaxes[0][0]), minsMaxes[1][0]],
+            upperRight: [X_SHIFT(minsMaxes[0][1]), minsMaxes[1][1]]
         });
     },
 
@@ -196,7 +199,7 @@ tempus.DiffAndDiffView = Backbone.View.extend({
                 tempus.formView.createMsaView(model.get('name'),
                                               function(shape) {
                                                   shape.features[0].properties.strokeColor = '#ff7f0e';
-                                                  shape.features[0].properties.strokeWidth = 4;
+                                                  shape.features[0].properties.strokeWidth = 3;
                                                   return shape;
                                               });
             } else {
