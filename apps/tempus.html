@@ -5,11 +5,9 @@
         <script type="text/template" id="action-form-template">
             <form class="form-inline" id="gs-select-form">
                 <div class="form-group">
-                    <label for="sel1">Location</label>
                     <select class="form-control" id="gs-select-location">
                         <option value="" disabled selected>Location</option>
                     </select>
-                    <label for="sel1">Covariants</label>
                     <select class="form-control" id="gs-select-covar" multiple="multiple">
                     </select>
                     <div id="gs-run-spinner" class="gs-display-inline">
@@ -54,16 +52,8 @@
 
     </head>
     <body>
-        <div class="container-fluid gs-fill" style="position:relative">
-            <div class="row">
-                <div id="action-form" class="gs-selection col-md-12"></div>
-            </div>
-            <div class="row gs-fill" style="margin-top:170px;">
-                <div class="gs-geospace">
-                    <div id="map"></div>
-                </div>
-            </div>
-            <div id="diff-and-diff-overlay"></div>
-        </div>
+        <div id="action-form" class="gs-selection"></div>
+        <div id="map"></div>
+        <div id="diff-and-diff-overlay"></div>
     </body>
 </html>

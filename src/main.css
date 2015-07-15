@@ -10,52 +10,41 @@ body {
 }
 
 #map {
-  height: 100%;
-  margin: 0px;
-  padding: 0px;
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-
-.gs-geospace {
-  top: 145px;
-  height: 100%;
-  margin: 0px;
-  padding: 0px;
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .gs-selection {
-  position: fixed;
-  padding-top: 5px;
+    z-index: 1;
+    position: fixed;
+    padding: 15px;
 }
 
-.gs-fill {
-  height: 100%;
+#gs-select-location {
+    display:block;
+    margin-bottom:5px;
 }
 
 a {
-  color: lightgray;
+    color: lightgray;
 }
 
 .gs-display-inline {
-  display: inline;
+    display: inline;
 }
 
 #diff-and-diff-overlay {
     position:absolute;
-    top:260px;
-    left:70px;
-
+    top:190px;
+    left:20px;
     background-color: #ffffff;
     z-index: 999;
-
-    height: 65%;
-    width: 40%;
-
     opacity: .8;
-
     display:none;
-
-
     border: 2px solid #4d4d4d;
+    padding: 5px;
+    border-radius:4px;
 }

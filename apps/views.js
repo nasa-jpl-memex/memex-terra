@@ -37,6 +37,7 @@ tempus.FormView = Backbone.View.extend({
         this.createMsaView($('#gs-select-location option:selected').text(),
                            function(shape) {
                                shape.features[0].properties.strokeColor = '#1f77b4';
+                               shape.features[0].properties.strokeWidth = 4;
                                return shape;
                            });
 
@@ -222,6 +223,7 @@ tempus.DiffAndDiffView = Backbone.View.extend({
                 tempus.formView.createMsaView(model.get('name'),
                                               function(shape) {
                                                   shape.features[0].properties.strokeColor = '#ff7f0e';
+                                                  shape.features[0].properties.strokeWidth = 4;
                                                   return shape;
                                               });
             } else {
@@ -250,8 +252,8 @@ tempus.DiffAndDiffView = Backbone.View.extend({
             });
         });
 
-        tempus.spec.width = $("#diff-and-diff-overlay").width() * 0.85;
-        tempus.spec.height = $("#diff-and-diff-overlay").height();
+        tempus.spec.width = 750;
+        tempus.spec.height = 550;
         tempus.spec.data[0].values = cleanData;
 
         if (clearPrev) {
