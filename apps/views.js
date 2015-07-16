@@ -194,18 +194,24 @@ tempus.DiffAndDiffView = Backbone.View.extend({
             return tempus.msaCollection.get(group);
         });
 
+        // Remove all models we don't have a shape for
+        _.remove(similarModels, function(model) {
+            if (_.isEmpty(model.get('shape'))) {
+                console.log('MSA ' + model.get('name')  + ' has no shape, skipping.');
+                return true;
+            }
+
+            return false;
+        });
+
         // render similar models boundaries
         _.each(similarModels, function(model) {
-            if (!_.isEmpty(model.get('shape'))) {
-                tempus.formView.createMsaView(model.get('name'),
-                                              function(shape) {
-                                                  shape.features[0].properties.strokeColor = '#ff7f0e';
-                                                  shape.features[0].properties.strokeWidth = 3;
-                                                  return shape;
-                                              });
-            } else {
-                console.log('MSA ' + location  + 'has no shape, skipping.');
-            }
+            tempus.formView.createMsaView(model.get('name'),
+                                          function(shape) {
+                                              shape.features[0].properties.strokeColor = '#ff7f0e';
+                                              shape.features[0].properties.strokeWidth = 3;
+                                              return shape;
+                                          });
         });
 
         this.focus(msaModel, similarModels);
