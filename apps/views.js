@@ -122,6 +122,9 @@ tempus.MapView = Backbone.View.extend({
 
 tempus.DiffAndDiffView = Backbone.View.extend({
     initialize: function(options) {
+        // Since it's always the same div, we only need to make it draggable on init
+        $('#diff-and-diff-overlay').draggable();
+
         this.render(options.location, options.covars);
     },
 
