@@ -37,7 +37,7 @@ tempus.FormView = Backbone.View.extend({
             return;
         }
 
-        tempus.mapView.clearFeatureLayers();
+        tempus.mapView.clearMsaFeatureLayer();
 
         this.createMsaView($('#gs-select-location option:selected').text(),
                            function(shape) {
@@ -83,18 +83,15 @@ tempus.FormView = Backbone.View.extend({
 
 tempus.MapView = Backbone.View.extend({
     el: '#map',
-    featureLayers: [],
 
     initialize: function() {
         this.render();
     },
 
-    clearFeatureLayers: function() {
-        _.each(this.featureLayers, function(layer) {
-            layer.clear();
-        });
-
-        tempus.mapView.featureLayers = [];
+    clearMsaFeatureLayer: function() {
+        if (this.msaFeatureLayer) {
+            this.msaFeatureLayer.clear();
+        }
     },
 
     render: function() {
@@ -259,20 +256,20 @@ tempus.MsaView = Backbone.View.extend({
     },
 
     render: function(options) {
-        var layerIdx = tempus.mapView.featureLayers.push(tempus.map.createLayer('feature'));
-        var layer = tempus.mapView.featureLayers[layerIdx - 1];
         var shape = this.model.get('shape');
 
-        // Let the user override certain properties.
-        // Specifically for styling of individual MSAs on individual analyses
+        // Create an msa feature layer if one doesn't already exist on the map
+        if (!_.has(tempus.mapView, 'msaFeatureLayer')) {
+            tempus.mapView.msaFeatureLayer = tempus.map.createLayer('feature');
+        }
+        // Let the user override any properties on the shape, useful for styling
         if (options.shapeFilter) {
             shape = options.shapeFilter(shape);
         }
 
-        tempus.map.draw();
-
-        var reader = geo.createFileReader('jsonReader', {'layer': layer});
-        reader.read(JSON.stringify(shape), function() {
+        geo.createFileReader('jsonReader', {
+            layer: tempus.mapView.msaFeatureLayer
+        }).read(JSON.stringify(shape), function() {
             tempus.map.draw();
         });
     }
