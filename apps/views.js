@@ -239,7 +239,7 @@ tempus.DiffAndDiffView = Backbone.View.extend({
         });
     },
 
-    render: function(location, covars, grouper, callback) {
+    render: function(location, covars, grouper) {
         var msaModel = tempus.msaCollection.get(location),
             similarModels = [];
 

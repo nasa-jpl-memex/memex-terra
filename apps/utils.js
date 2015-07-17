@@ -110,8 +110,8 @@ tempus.d3TimeSeries = function(ts) {
             .data(dataset.data)
             .enter().append("svg:circle")
             .attr("class", "point " + dataset.label)
-            .attr("cx", function(d, i) { return x(d[ts.x]); })
-            .attr("cy", function(d, i) { return y(d[ts.y]); })
-            .attr("r", function(d, i) { return 3; });
+            .attr("cx", function(d) { return x(d[ts.x]); })
+            .attr("cy", function(d) { return y(d[ts.y]); })
+            .attr("r", function() { return 3; });
     });
 };
