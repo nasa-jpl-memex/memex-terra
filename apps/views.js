@@ -46,9 +46,10 @@ tempus.FormView = Backbone.View.extend({
                                return shape;
                            });
 
-        var dd = new tempus.DiffAndDiffView({
+        this.dd = new tempus.DiffAndDiffView({
             location: location,
-            covars: this.covars.join('|')
+            covars: this.covars.join('|'),
+            grouper: $('#gs-select-grouper').val()
         });
     },
 
@@ -118,12 +119,63 @@ tempus.MapView = Backbone.View.extend({
 
 tempus.DiffAndDiffView = Backbone.View.extend({
     initialize: function(options) {
+        var grouper;
+
         // Since it's always the same div, we only need to make it draggable on init
         $('#diff-and-diff-overlay').draggable();
 
         this.similaritiesSummaryTemplate = _.template($('#similarities-summary-template').html());
 
-        this.render(options.location, options.covars);
+        // @todo this needs to be simplified, refactor it to use all of d3s time handling
+        // since stdlib doesn't support weeks out of the box
+        if (options.grouper === 'monthly') {
+            grouper = this._groupBy.bind(this,
+                                         function(d) {
+                                             return new Date(d.date.getFullYear(), d.date.getMonth());
+                                         },
+                                         function(d) {
+                                            return new Date(d);
+                                         });
+        } else if (options.grouper === 'weekly') {
+            grouper = this._groupBy.bind(this,
+                                         function(d) {
+                                             return [d.date.getFullYear(), d3.time.format("%U")(d.date)];
+                                         },
+                                         function(d) {
+                                             // d3 can not parse the week number without the day of week,
+                                             // so we always pass 0 as the day of week.
+                                             // see https://github.com/mbostock/d3/issues/1914
+                                             d += ",0";
+                                             return d3.time.format("%Y,%U,%w").parse(d);
+                                         });
+        } else if (options.grouper === 'daily') {
+            grouper = this._groupBy.bind(this,
+                                         function(d) {
+                                             return new Date(d.date.getFullYear(), d.date.getMonth(), d.date.getDate());
+                                         },
+                                         function(d) {
+                                            return new Date(d);
+                                         });
+        }
+
+        this.render(options.location, options.covars, grouper);
+    },
+
+    _groupBy: function(keyFunc, keyToDateFunc, data) {
+        data = d3.nest()
+            .key(keyFunc)
+            .rollup(function(d) {
+                return d3.sum(d, function(g) {
+                    return g.value;
+                });
+            }).entries(data);
+
+        return _.map(data, function(datum) {
+            return {
+                date: keyToDateFunc(datum.key),
+                value: datum.values
+            };
+        });
     },
 
     fetchTimeSeriesData: function(location, covars) {
@@ -187,7 +239,7 @@ tempus.DiffAndDiffView = Backbone.View.extend({
         });
     },
 
-    render: function(location, covars, callback) {
+    render: function(location, covars, grouper, callback) {
         var msaModel = tempus.msaCollection.get(location),
             similarModels = [];
 
@@ -239,19 +291,28 @@ tempus.DiffAndDiffView = Backbone.View.extend({
             };
         });
 
-        if (!(_.isEmpty(this.tsData.result) && _.isEmpty(this.tsCompData.result))) {
-            tempus.d3TimeSeries({
+        // Do grouping
+        var tsData = this.tsData.result,
+            tsCompData = this.tsCompData.result;
+
+        if (_.isFunction(grouper)) {
+            tsData = grouper(this.tsData.result);
+            tsCompData = grouper(this.tsCompData.result);
+        }
+
+        if (!(_.isEmpty(tsData) && _.isEmpty(tsCompData))) {
+            this.d3ts = tempus.d3TimeSeries({
                 selector: '#diff-and-diff-overlay',
                 x: 'date',
                 y: 'value',
                 datasets: [
                     {
                         label: 'raw',
-                        data: this.tsData.result
+                        data: tsData
                     },
                     {
                         label: 'comp',
-                        data: this.tsCompData.result
+                        data: tsCompData
                     }
                 ]
             });
@@ -261,8 +322,6 @@ tempus.DiffAndDiffView = Backbone.View.extend({
             // Potentially hide it from previous analyses if this one has no results
             $('#diff-and-diff-overlay').css('display', 'none');
         }
-
-
     }
 });
 
