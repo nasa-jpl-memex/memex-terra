@@ -48,3 +48,33 @@ a {
     padding: 5px;
     border-radius:4px;
 }
+
+.ui-draggable {
+    cursor: pointer;
+}
+#diff-and-diff-overlay .axis path,
+#diff-and-diff-overlay .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+#diff-and-diff-overlay .line {
+    fill: none;
+    stroke: #d62728;
+    stroke-width: 3px;
+}
+
+#diff-and-diff-overlay .line.comp {
+    stroke: #ff7f0e;
+}
+
+#diff-and-diff-overlay .point {
+    fill: #d62728;
+    stroke: #d62728;
+}
+
+#diff-and-diff-overlay .point.comp {
+    fill: #ff7f0e;
+    stroke: #ff7f0e;
+}

@@ -41,7 +41,7 @@ tempus.FormView = Backbone.View.extend({
 
         this.createMsaView($('#gs-select-location option:selected').text(),
                            function(shape) {
-                               shape.features[0].properties.strokeColor = '#1f77b4';
+                               shape.features[0].properties.strokeColor = '#d62728';
                                shape.features[0].properties.strokeWidth = 3;
                                return shape;
                            });
@@ -216,40 +216,42 @@ tempus.DiffAndDiffView = Backbone.View.extend({
 
         this.focus(msaModel, similarModels);
 
-        var clearPrev = false;
-        var cleanData = [];
+        // Cleanup data
+        var dateParser = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
+        this.tsData.result = _.map(this.tsData.result, function(datum) {
+            datum[0] = dateParser(datum[0]);
 
-        _.each(this.tsData.result, function(datum) {
-            cleanData.push({
+            return {
                 date: datum[0],
-                value: datum[1],
-                symbol: 'raw'
-            });
+                value: datum[1]
+            };
+        });
+        this.tsCompData.result = _.map(this.tsCompData.result, function(datum) {
+            datum[0] = dateParser(datum[0]);
+
+            return {
+                date: datum[0],
+                value: datum[1]
+            };
         });
 
-        _.each(this.tsCompData.result, function(datum) {
-            cleanData.push({
-                date: datum[0],
-                value: datum[1],
-                symbol: 'comp'
-            });
-        });
-
-        tempus.spec.width = 750;
-        tempus.spec.height = 550;
-        tempus.spec.data[0].values = cleanData;
-
-        if (clearPrev) {
-            $("#statistics").empty();
+        tempus.d3TimeSeries({
+            selector: '#diff-and-diff-overlay',
+            x: 'date',
+            y: 'value',
+            datasets: [
+                {
+                    label: 'raw',
+                    data: this.tsData.result
+                },
+                {
+                    label: 'comp',
+                    data: this.tsCompData.result
         }
-
-        vg.parse.spec(tempus.spec, function(chart) {
-            chart({
-                el: "#diff-and-diff-overlay"
-            }).update();
+            ]
+        });
 
             $('#diff-and-diff-overlay').css('display', 'block');
-        });
     }
 });
 
