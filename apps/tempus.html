@@ -10,14 +10,26 @@
                     </select>
                     <select class="form-control" id="gs-select-covar" multiple="multiple">
                     </select>
-                    <div id="gs-run-spinner" class="gs-display-inline">
-                        <button class="btn btn-primary gs-spinner-icon">
-                            <span class="spinner"><i class="fa fa-circle-o-notch fa-spin"></i></span>
-                        </button>
+                    <div class="gs-display-inline">
                         <button class="btn btn-primary gs-spinner-text" type="submit">Run</button>
                     </div>
                 </div>
             </form>
+
+            <div id="similarities-summary"></div>
+        </script>
+
+        <script type="text/template" id="similarities-summary-template">
+            <% if (_.isEmpty(similarMsas)) { %>
+            <span style="margin-bottom:10px;display:block;">No similarity data found</span>
+            <% } else { %>
+            <span>Similar to <%= msa %>:</span>
+            <ul>
+                <% _.forEach(similarMsas, function(msa) { %>
+                <li><%- msa %></li>
+                <% }); %>
+            </ul>
+            <% } %>
         </script>
 
         <script type="text/javascript" src="../src/bower_components/jquery/dist/jquery.js"></script>

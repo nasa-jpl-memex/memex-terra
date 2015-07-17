@@ -21,6 +21,7 @@ body {
     z-index: 1;
     position: fixed;
     padding: 15px;
+    padding-bottom: 0px;
 }
 
 #gs-select-location {
@@ -38,7 +39,7 @@ a {
 
 #diff-and-diff-overlay {
     position:absolute;
-    top:190px;
+    top:250px;
     left:20px;
     background-color: #ffffff;
     z-index: 999;
@@ -77,4 +78,16 @@ a {
 #diff-and-diff-overlay .point.comp {
     fill: #ff7f0e;
     stroke: #ff7f0e;
+}
+
+#action-form {
+    background-color: #fff;
+    margin: 10px;
+    opacity: .95;
+    border-radius: 4px;
+    border: 1px solid #4d4d4d;
+}
+
+#similarities-summary {
+    margin-top: 15px;
 }

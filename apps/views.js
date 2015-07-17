@@ -74,10 +74,6 @@ tempus.FormView = Backbone.View.extend({
                 $('#gs-select-covar').multiselect();
             }
         }, tempus.useCache);
-
-        $("#gs-run-spinner .gs-spinner-icon").hide();
-        $("#spinner .gs-spinner-icon").hide();
-        $("#spinner .gs-spinner-text").hide();
     }
 });
 
@@ -125,6 +121,8 @@ tempus.DiffAndDiffView = Backbone.View.extend({
         // Since it's always the same div, we only need to make it draggable on init
         $('#diff-and-diff-overlay').draggable();
 
+        this.similaritiesSummaryTemplate = _.template($('#similarities-summary-template').html());
+
         this.render(options.location, options.covars);
     },
 
@@ -162,7 +160,13 @@ tempus.DiffAndDiffView = Backbone.View.extend({
                             return s.replace(/ MSA$/, '');
                         });
 
-                        console.log('MSA is similar to: ' + compData.groups.join(', '));
+                        // Update summary div
+                        var newSimilarityHtml = _this.similaritiesSummaryTemplate({
+                            'msa': location,
+                            'similarMsas': compData.groups
+                        });
+
+                        $('#similarities-summary').html(newSimilarityHtml);
 
                         _this.tsCompData = compData;
                     }
@@ -235,23 +239,30 @@ tempus.DiffAndDiffView = Backbone.View.extend({
             };
         });
 
-        tempus.d3TimeSeries({
-            selector: '#diff-and-diff-overlay',
-            x: 'date',
-            y: 'value',
-            datasets: [
-                {
-                    label: 'raw',
-                    data: this.tsData.result
-                },
-                {
-                    label: 'comp',
-                    data: this.tsCompData.result
-        }
-            ]
-        });
+        if (!(_.isEmpty(this.tsData.result) && _.isEmpty(this.tsCompData.result))) {
+            tempus.d3TimeSeries({
+                selector: '#diff-and-diff-overlay',
+                x: 'date',
+                y: 'value',
+                datasets: [
+                    {
+                        label: 'raw',
+                        data: this.tsData.result
+                    },
+                    {
+                        label: 'comp',
+                        data: this.tsCompData.result
+                    }
+                ]
+            });
 
             $('#diff-and-diff-overlay').css('display', 'block');
+        } else {
+            // Potentially hide it from previous analyses if this one has no results
+            $('#diff-and-diff-overlay').css('display', 'none');
+        }
+
+
     }
 });
 
