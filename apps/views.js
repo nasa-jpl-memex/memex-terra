@@ -4,7 +4,7 @@ tempus.FormView = Backbone.View.extend({
     el: '#action-form',
 
     events: {
-        'submit #gs-select-form': 'runDiffAndDiff'
+        'submit #gs-select-form': 'routeToAnalysis'
     },
 
     createMsaView: function(msaName, shapeFilter) {
@@ -18,20 +18,17 @@ tempus.FormView = Backbone.View.extend({
         }
     },
 
-    runDiffAndDiff: function(event) {
+    routeToAnalysis: function(event) {
         event.preventDefault();
-        var _this = this;
-        this.covars = [];
 
-        var location = $('#gs-select-location option:selected').text();
-        var covars = $('#gs-select-covar option:selected').each(function() {
-            var $this = $(this);
+        window.location.hash = [
+            $('#gs-select-location option:selected').text(),
+            _.map($('#gs-select-covar option:selected'), $.text).join('|'),
+            $('#gs-select-grouper option:selected').val()
+        ].join('/');
+    },
 
-            if ($this.length) {
-                _this.covars.push($this.text());
-            }
-        });
-
+    runDiffAndDiff: function(location, covars, groupby) {
         if (_.isEmpty(covars)) {
             tempus.error('No covariables selected.');
             return;
@@ -39,7 +36,7 @@ tempus.FormView = Backbone.View.extend({
 
         tempus.mapView.clearMsaFeatureLayer();
 
-        this.createMsaView($('#gs-select-location option:selected').text(),
+        this.createMsaView(location,
                            function(shape) {
                                shape.features[0].properties.strokeColor = '#d62728';
                                shape.features[0].properties.strokeWidth = 3;
@@ -48,8 +45,8 @@ tempus.FormView = Backbone.View.extend({
 
         this.dd = new tempus.DiffAndDiffView({
             location: location,
-            covars: this.covars.join('|'),
-            grouper: $('#gs-select-grouper').val()
+            covars: covars,
+            grouper: groupby
         });
     },
 
