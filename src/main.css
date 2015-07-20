@@ -43,7 +43,7 @@ a {
     left:20px;
     background-color: #ffffff;
     z-index: 999;
-    opacity: .8;
+    opacity: .9;
     display:none;
     border: 2px solid #4d4d4d;
     padding: 5px;
@@ -78,6 +78,11 @@ a {
 #diff-and-diff-overlay .point.comp {
     fill: #ff7f0e;
     stroke: #ff7f0e;
+}
+
+#diff-and-diff-overlay select {
+    position: absolute;
+    left: 680px;
 }
 
 #action-form {

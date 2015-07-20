@@ -23,12 +23,11 @@ tempus.FormView = Backbone.View.extend({
 
         window.location.hash = [
             $('#gs-select-location option:selected').text(),
-            _.map($('#gs-select-covar option:selected'), $.text).join('|'),
-            $('#gs-select-grouper option:selected').val()
+            _.map($('#gs-select-covar option:selected'), $.text).join('|')
         ].join('/');
     },
 
-    runDiffAndDiff: function(location, covars, groupby) {
+    runDiffAndDiff: function(location, covars) {
         if (_.isEmpty(covars)) {
             tempus.error('No covariables selected.');
             return;
@@ -46,7 +45,7 @@ tempus.FormView = Backbone.View.extend({
         this.dd = new tempus.DiffAndDiffView({
             location: location,
             covars: covars,
-            grouper: groupby
+            grouper: 'monthly' // default grouping
         });
     },
 
@@ -115,6 +114,26 @@ tempus.MapView = Backbone.View.extend({
 });
 
 tempus.DiffAndDiffView = Backbone.View.extend({
+    el: '#diff-and-diff-overlay',
+
+    events: {
+        'change #diff-and-diff-grouping': 'changeGrouping'
+    },
+
+    changeGrouping: function(event) {
+        var groupBy = $(event.currentTarget).find('option:selected').val();
+        this.d3ts([
+            {
+                label: 'raw',
+                data: this._grouper(groupBy)(this.tsData.result)
+            },
+            {
+                label: 'comp',
+                data: this._grouper(groupBy)(this.tsCompData.result)
+            }
+        ]);
+    },
+
     initialize: function(options) {
         var grouper;
 
@@ -123,17 +142,23 @@ tempus.DiffAndDiffView = Backbone.View.extend({
 
         this.similaritiesSummaryTemplate = _.template($('#similarities-summary-template').html());
 
+        this.render(options.location, options.covars, this._grouper(options.grouper));
+    },
+
+    _grouper: function(groupBy) {
+        var grouper;
+
         // @todo this needs to be simplified, refactor it to use all of d3s time handling
         // since stdlib doesn't support weeks out of the box
-        if (options.grouper === 'monthly') {
+        if (groupBy === 'monthly') {
             grouper = this._groupBy.bind(this,
                                          function(d) {
                                              return new Date(d.date.getFullYear(), d.date.getMonth());
                                          },
                                          function(d) {
-                                            return new Date(d);
+                                             return new Date(d);
                                          });
-        } else if (options.grouper === 'weekly') {
+        } else if (groupBy === 'weekly') {
             grouper = this._groupBy.bind(this,
                                          function(d) {
                                              return [d.date.getFullYear(), d3.time.format("%U")(d.date)];
@@ -145,17 +170,17 @@ tempus.DiffAndDiffView = Backbone.View.extend({
                                              d += ",0";
                                              return d3.time.format("%Y,%U,%w").parse(d);
                                          });
-        } else if (options.grouper === 'daily') {
+        } else if (groupBy === 'daily') {
             grouper = this._groupBy.bind(this,
                                          function(d) {
                                              return new Date(d.date.getFullYear(), d.date.getMonth(), d.date.getDate());
                                          },
                                          function(d) {
-                                            return new Date(d);
+                                             return new Date(d);
                                          });
         }
 
-        this.render(options.location, options.covars, grouper);
+        return grouper;
     },
 
     _groupBy: function(keyFunc, keyToDateFunc, data) {

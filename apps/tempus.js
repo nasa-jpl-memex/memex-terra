@@ -10,19 +10,18 @@ $(function () {
 
     tempus.AppRouter = Backbone.Router.extend({
         routes: {
-            ':msa/:covars/:groupby': 'index'
+            ':msa/:covars': 'index'
         },
 
-        index: function(msa, covars, groupby) {
+        index: function(msa, covars) {
             $('#gs-select-location option:contains(' + msa + ')').attr('selected', true);
-            $('#gs-select-grouper option[value="' + groupby + '"]').attr('selected', true);
 
             _.each(covars.split('|'), function(covar) {
                 $('#gs-select-covar option[value="' + covar + '"]').attr('selected', true);
                 $('#gs-select-covar').multiselect('refresh');
             });
 
-            tempus.formView.runDiffAndDiff(msa, covars, groupby);
+            tempus.formView.runDiffAndDiff(msa, covars);
         }
     });
 
