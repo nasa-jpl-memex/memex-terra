@@ -98,20 +98,36 @@ tempus.d3TimeSeries = function(ts) {
         .attr("dy", ".71em")
         .style("text-anchor", "end");
 
+    function draw(datasets) {
+        // Update axes for both new lines
+        data = _.reduce(datasets, function(arr, dataset) {
+            return arr.concat(dataset.data);
+        }, []);
 
-    // Draw lines and points, for each dataset
-    _.each(ts.datasets, function(dataset) {
-        svg.append("path")
-            .datum(dataset.data)
-            .attr("class", "line " + dataset.label)
-            .attr("d", line);
+        x.domain(d3.extent(data, function(datum) { return datum[ts.x]; }));
+        y.domain([0, d3.max(data, function(datum) { return datum[ts.y]; })]);
 
-        svg.selectAll("point-" + dataset.label)
-            .data(dataset.data)
-            .enter().append("svg:circle")
-            .attr("class", "point " + dataset.label)
-            .attr("cx", function(d) { return x(d[ts.x]); })
-            .attr("cy", function(d) { return y(d[ts.y]); })
-            .attr("r", function() { return 3; });
-    });
+        svg.selectAll("g .x.axis")
+            .call(xAxis);
+
+        svg.selectAll("g .y.axis")
+            .call(yAxis);
+
+        // Remove old lines, create new lines
+        _.each(datasets, function(dataset) {
+            svg.selectAll(".line." + dataset.label).remove();
+
+            var path = svg.selectAll(".line ." + dataset.label)
+                    .data([dataset.data], function(d) { return d; });
+
+            path.enter()
+                .append("path")
+                .attr("class", "line " + dataset.label)
+                .attr("d", line);
+        });
+    }
+
+    draw(ts.datasets);
+
+    return draw;
 };
