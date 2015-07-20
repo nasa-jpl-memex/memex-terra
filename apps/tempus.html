@@ -31,12 +31,15 @@
             <% } %>
         </script>
 
-        <script type="text/template" id="diff-and-diff-overlay-template">
-            <select id="diff-and-diff-grouping">
-                <option value="monthly">Monthly</option>
-                <option value="weekly">Weekly</option>
-                <option value="daily">Daily</option>
-            </select>
+        <script type="text/template" id="ts-analysis-overlay-template">
+            <div id="ts-analysis-overlay-options">
+                <select id="ts-analysis-grouping">
+                    <option value="monthly" <% if (selected && selected === 'monthly') { print('selected'); } %>>Monthly</option>
+                    <option value="weekly" <% if (selected && selected === 'weekly') { print('selected'); } %>>Weekly</option>
+                    <option value="daily" <% if (selected && selected === 'daily') { print('selected'); } %>>Daily</option>
+                </select>
+                <input type="text" name="daterangepicker" />
+            </div>
         </script>
 
         <script type="text/javascript" src="../src/bower_components/jquery/dist/jquery.js"></script>
@@ -50,7 +53,6 @@
         <script src="../src/js/bootstrap.min.js"></script>
         <script charset="UTF-8" type="text/javascript" src="../src/bower_components/d3/d3.js"></script>
         <script src="../src/bower_components/bootstrap-multiselect/dist/js/bootstrap-multiselect.js"></script>
-        <script src="diffAndDiff.js"></script>
         <script src="utils.js"></script>
         <script src="models.js"></script>
         <script src="collections.js"></script>
@@ -63,15 +65,14 @@
         <link rel="stylesheet" href="../src/css/font-awesome.min.css">
         <link rel="stylesheet" href="//code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css">
         <link rel="stylesheet" href="../src/main.css">
+
         <script type="text/javascript" src="../src/bower_components/moment/moment.js"></script>
-        <script type="text/javascript" src="../src/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
-
-        <link rel="stylesheet" href="../src/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css" />
-
+        <script type="text/javascript" src="../src/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
+        <link rel="stylesheet" type="text/css" href="../src/bower_components/bootstrap-daterangepicker/daterangepicker.css" />
     </head>
     <body>
         <div id="action-form" class="gs-selection"></div>
         <div id="map"></div>
-        <div id="diff-and-diff-overlay"></div>
+        <div id="ts-analysis-overlay"></div>
     </body>
 </html>

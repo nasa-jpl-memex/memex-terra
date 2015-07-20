@@ -8,10 +8,10 @@
     "test",
     "tests"
   ],
-  "dependencies": {
-    "eonasdan-bootstrap-datetimepicker": "~4.14.30",
-    "backbone": "~1.2.1",
-    "bootstrap-multiselect": "~0.9.13",
-    "lodash": "~3.10.0"
+    "dependencies": {
+      "bootstrap-daterangepicker": "~2.0.2",
+      "backbone": "~1.2.1",
+      "bootstrap-multiselect": "~0.9.13",
+      "lodash": "~3.10.0"
   }
 }

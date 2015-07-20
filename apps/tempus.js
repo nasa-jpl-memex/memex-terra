@@ -21,7 +21,7 @@ $(function () {
                 $('#gs-select-covar').multiselect('refresh');
             });
 
-            tempus.formView.runDiffAndDiff(msa, covars);
+            tempus.formView.runTsAnalysis(msa, covars);
         }
     });
 

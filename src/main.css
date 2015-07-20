@@ -37,14 +37,13 @@ a {
     display: inline;
 }
 
-#diff-and-diff-overlay {
+#ts-analysis-overlay {
     position:absolute;
     top:250px;
     left:20px;
     background-color: #ffffff;
     z-index: 999;
     opacity: .9;
-    display:none;
     border: 2px solid #4d4d4d;
     padding: 5px;
     border-radius:4px;
@@ -53,34 +52,34 @@ a {
 .ui-draggable {
     cursor: pointer;
 }
-#diff-and-diff-overlay .axis path,
-#diff-and-diff-overlay .axis line {
+#ts-analysis-overlay .axis path,
+#ts-analysis-overlay .axis line {
     fill: none;
     stroke: #000;
     shape-rendering: crispEdges;
 }
 
-#diff-and-diff-overlay .line {
+#ts-analysis-overlay .line {
     fill: none;
     stroke: #d62728;
     stroke-width: 3px;
 }
 
-#diff-and-diff-overlay .line.comp {
+#ts-analysis-overlay .line.comp {
     stroke: #ff7f0e;
 }
 
-#diff-and-diff-overlay .point {
+#ts-analysis-overlay .point {
     fill: #d62728;
     stroke: #d62728;
 }
 
-#diff-and-diff-overlay .point.comp {
+#ts-analysis-overlay .point.comp {
     fill: #ff7f0e;
     stroke: #ff7f0e;
 }
 
-#diff-and-diff-overlay select {
+#ts-analysis-overlay-options {
     position: absolute;
     left: 680px;
 }

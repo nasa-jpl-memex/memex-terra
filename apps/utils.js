@@ -44,9 +44,6 @@ tempus.ajax = function(options, useCache) {
 };
 
 tempus.d3TimeSeries = function(ts) {
-    // Clear any existing plots
-    $(ts.selector).html(_.template($('#diff-and-diff-overlay-template').html(), {}));
-
     var data = _.reduce(ts.datasets, function(arr, dataset) {
         return arr.concat(dataset.data);
     }, []);

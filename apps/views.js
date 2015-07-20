@@ -27,25 +27,17 @@ tempus.FormView = Backbone.View.extend({
         ].join('/');
     },
 
-    runDiffAndDiff: function(location, covars) {
-        if (_.isEmpty(covars)) {
-            tempus.error('No covariables selected.');
+    runTsAnalysis: function(location, covars) {
+        if (_.isEmpty(location) || _.isEmpty(covars)) {
+            tempus.error('No location and/or covariables selected.');
             return;
         }
 
-        tempus.mapView.clearMsaFeatureLayer();
-
-        this.createMsaView(location,
-                           function(shape) {
-                               shape.features[0].properties.strokeColor = '#d62728';
-                               shape.features[0].properties.strokeWidth = 3;
-                               return shape;
-                           });
-
-        this.dd = new tempus.DiffAndDiffView({
-            location: location,
-            covars: covars,
-            grouper: 'monthly' // default grouping
+        this.dd = new tempus.TsAnalysisView({
+            model: new tempus.TsAnalysis({
+                location: location,
+                covars: covars
+            })
         });
     },
 
@@ -113,147 +105,39 @@ tempus.MapView = Backbone.View.extend({
     }
 });
 
-tempus.DiffAndDiffView = Backbone.View.extend({
-    el: '#diff-and-diff-overlay',
-
+tempus.TsAnalysisView = Backbone.View.extend({
+    el: '#ts-analysis-overlay',
     events: {
-        'change #diff-and-diff-grouping': 'changeGrouping'
-    },
-
-    changeGrouping: function(event) {
-        var groupBy = $(event.currentTarget).find('option:selected').val();
-        this.d3ts([
-            {
-                label: 'raw',
-                data: this._grouper(groupBy)(this.tsData.result)
-            },
-            {
-                label: 'comp',
-                data: this._grouper(groupBy)(this.tsCompData.result)
-            }
-        ]);
+        'change #ts-analysis-grouping': 'changeGrouping'
     },
 
     initialize: function(options) {
-        var grouper;
+        this.groupedBy = 'monthly';
+        this.model.on('change:tsDisplayData', this.render, this);
 
-        // Since it's always the same div, we only need to make it draggable on init
-        $('#diff-and-diff-overlay').draggable();
+        $('#ts-analysis-overlay').draggable();
 
         this.similaritiesSummaryTemplate = _.template($('#similarities-summary-template').html());
 
-        this.render(options.location, options.covars, this._grouper(options.grouper));
+        // The data needs to be grouped for the first rendering
+        this.model.groupedBy(this.groupedBy);
+        this.render();
     },
 
-    _grouper: function(groupBy) {
-        var grouper;
+    // Group each dataset, then set tsDisplayData which will trigger the re-render
+    changeGrouping: function(event) {
+        var groupedDatasets = this.model.get('tsData');
 
-        // @todo this needs to be simplified, refactor it to use all of d3s time handling
-        // since stdlib doesn't support weeks out of the box
-        if (groupBy === 'monthly') {
-            grouper = this._groupBy.bind(this,
-                                         function(d) {
-                                             return new Date(d.date.getFullYear(), d.date.getMonth());
-                                         },
-                                         function(d) {
-                                             return new Date(d);
-                                         });
-        } else if (groupBy === 'weekly') {
-            grouper = this._groupBy.bind(this,
-                                         function(d) {
-                                             return [d.date.getFullYear(), d3.time.format("%U")(d.date)];
-                                         },
-                                         function(d) {
-                                             // d3 can not parse the week number without the day of week,
-                                             // so we always pass 0 as the day of week.
-                                             // see https://github.com/mbostock/d3/issues/1914
-                                             d += ",0";
-                                             return d3.time.format("%Y,%U,%w").parse(d);
-                                         });
-        } else if (groupBy === 'daily') {
-            grouper = this._groupBy.bind(this,
-                                         function(d) {
-                                             return new Date(d.date.getFullYear(), d.date.getMonth(), d.date.getDate());
-                                         },
-                                         function(d) {
-                                             return new Date(d);
-                                         });
-        }
-
-        return grouper;
+        this.groupedBy = $(event.currentTarget).find('option:selected').val();
+        this.model.groupedBy(this.groupedBy);
     },
 
-    _groupBy: function(keyFunc, keyToDateFunc, data) {
-        data = d3.nest()
-            .key(keyFunc)
-            .rollup(function(d) {
-                return d3.sum(d, function(g) {
-                    return g.value;
-                });
-            }).entries(data);
-
-        return _.map(data, function(datum) {
-            return {
-                date: keyToDateFunc(datum.key),
-                value: datum.values
-            };
-        });
-    },
-
-    fetchTimeSeriesData: function(location, covars) {
-        var _this = this;
-
-        tempus.ajax({
-            url: 'https://tempus-demo.ngrok.com/api/series',
-            data: {
-                table: 'escort_ads',
-                sort: 1,
-                response_col: 'price_per_hour',
-                group_col: 'msaname',
-                group: location + ' MSA' // @todo should we ever strip this out?
-            },
-            async: false,
-            dataType: 'json',
-            success: function(data) {
-                _this.tsData = data;
-
-                tempus.ajax({
-                    url: 'https://tempus-demo.ngrok.com/api/comparison',
-                    data: {
-                        table: 'escort_ads',
-                        sort: 1,
-                        response_col: 'price_per_hour',
-                        group_col: 'msaname',
-                        group: location + ' MSA', // @todo should we ever strip this out?
-                        covs: covars
-                    },
-                    async: false,
-                    dataType: 'json',
-                    success: function(compData) {
-                        compData.groups = _.map(compData.groups, function(s) {
-                            return s.replace(/ MSA$/, '');
-                        });
-
-                        // Update summary div
-                        var newSimilarityHtml = _this.similaritiesSummaryTemplate({
-                            'msa': location,
-                            'similarMsas': compData.groups
-                        });
-
-                        $('#similarities-summary').html(newSimilarityHtml);
-
-                        _this.tsCompData = compData;
-                    }
-                });
-            }
-        });
-    },
-
-    focus: function (msaModel, similarModels) {
+    focus: function () {
         var X_SHIFT = function(xCoord) {
             return xCoord - 3;
         };
-        var minsMaxes = tempus.msaCollection.aggregateBoundingBox([msaModel].concat(similarModels));
+        var minsMaxes = tempus.msaCollection.aggregateBoundingBox(
+            [this.model.get('location')].concat(this.model.get('similarModels')));
 
         tempus.map.bounds({
             lowerLeft: [X_SHIFT(minsMaxes[0][0]), minsMaxes[1][0]],
@@ -261,29 +145,22 @@ tempus.DiffAndDiffView = Backbone.View.extend({
         });
     },
 
-    render: function(location, covars, grouper) {
-        var msaModel = tempus.msaCollection.get(location),
-            similarModels = [];
+    render: function() {
+        var _this = this;
 
-        // @todo setup a series model?
-        this.fetchTimeSeriesData(location, covars);
+        tempus.mapView.clearMsaFeatureLayer();
+        this.$el.html('');
 
-        similarModels = _.map(this.tsCompData.groups, function(group) {
-            return tempus.msaCollection.get(group);
-        });
+        // Create primary MSA outline
+        tempus.formView.createMsaView(this.model.get('location'),
+                                      function(shape) {
+                                          shape.features[0].properties.strokeColor = '#d62728';
+                                          shape.features[0].properties.strokeWidth = 3;
+                                          return shape;
+                                      });
 
-        // Remove all models we don't have a shape for
-        _.remove(similarModels, function(model) {
-            if (_.isEmpty(model.get('shape'))) {
-                console.log('MSA ' + model.get('name')  + ' has no shape, skipping.');
-                return true;
-            }
-
-            return false;
-        });
-
-        // render similar models boundaries
-        _.each(similarModels, function(model) {
+        // Create similar MSA outlines
+        _.each(this.model.get('similarModels'), function(model) {
             tempus.formView.createMsaView(model.get('name'),
                                           function(shape) {
                                               shape.features[0].properties.strokeColor = '#ff7f0e';
@@ -292,57 +169,35 @@ tempus.DiffAndDiffView = Backbone.View.extend({
                                           });
         });
 
-        this.focus(msaModel, similarModels);
+        // Focus on bounding box of MSAs
+        this.focus();
 
-        // Cleanup data
-        var dateParser = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
-        this.tsData.result = _.map(this.tsData.result, function(datum) {
-            datum[0] = dateParser(datum[0]);
+        // Draw the time series and save the function for updating
+        if (!_.isEmpty(this.model.get('tsDisplayData'))) {
+            var dateExtent = this.model.dateExtent();
+            var opts = _.merge(
+                {
+                    // @todo more selector nonsense
+                    selector: '#ts-analysis-overlay',
+                    x: 'date',
+                    y: 'value'},
+                {
+                    datasets: this.model.get('tsDisplayData')
+                });
 
-            return {
-                date: datum[0],
-                value: datum[1]
-            };
-        });
-        this.tsCompData.result = _.map(this.tsCompData.result, function(datum) {
-            datum[0] = dateParser(datum[0]);
+            this.$el.html(_.template($('#ts-analysis-overlay-template').html())({
+                selected: this.groupedBy
+            }));
 
-            return {
-                date: datum[0],
-                value: datum[1]
-            };
-        });
+            tempus.d3TimeSeries(opts);
 
-        // Do grouping
-        var tsData = this.tsData.result,
-            tsCompData = this.tsCompData.result;
-
-        if (_.isFunction(grouper)) {
-            tsData = grouper(this.tsData.result);
-            tsCompData = grouper(this.tsCompData.result);
-        }
-
-        if (!(_.isEmpty(tsData) && _.isEmpty(tsCompData))) {
-            this.d3ts = tempus.d3TimeSeries({
-                selector: '#diff-and-diff-overlay',
-                x: 'date',
-                y: 'value',
-                datasets: [
-                    {
-                        label: 'raw',
-                        data: tsData
-                    },
-                    {
-                        label: 'comp',
-                        data: tsCompData
-                    }
-                ]
+            $('#ts-analysis-overlay input[name="daterangepicker"]').daterangepicker({
+                startDate: dateExtent[0],
+                endDate: dateExtent[1]
+            }, function(start, end) {
+                _this.model.spanningDate(start, end, _this.groupedBy);
             });
-
-            $('#diff-and-diff-overlay').css('display', 'block');
-        } else {
-            // Potentially hide it from previous analyses if this one has no results
-            $('#diff-and-diff-overlay').css('display', 'none');
+            // On enter of datepicker, it will re-render this plot.
         }
     }
 });
