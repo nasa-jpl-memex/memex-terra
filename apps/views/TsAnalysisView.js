@@ -39,10 +39,18 @@ tempus.TsAnalysisView = Backbone.View.extend({
         });
     },
 
+    clear: function() {
+        tempus.mapView.clearMsaFeatureLayer();
+
+        if (!_.isUndefined(this.dateRangePicker)) {
+            this.dateRangePicker.remove();
+        }
+    },
+
     render: function() {
         var _this = this;
 
-        tempus.mapView.clearMsaFeatureLayer();
+        this.clear();
 
         var similarityHtml = this.similaritiesSummaryTemplate({
             msa: this.model.get('location').get('name'),
@@ -82,7 +90,7 @@ tempus.TsAnalysisView = Backbone.View.extend({
             }));
 
             var dateExtent = this.model.dateExtent();
-            $('#ts-analysis-overlay input[name="daterangepicker"]').daterangepicker({
+            this.dateRangePicker = $('#ts-analysis-overlay input[name="daterangepicker"]').daterangepicker({
                 startDate: dateExtent[0],
                 endDate: dateExtent[1]
             }, function(start, end) {
