@@ -12,6 +12,7 @@
       "bootstrap-daterangepicker": "~2.0.2",
       "backbone": "~1.2.1",
       "bootstrap-multiselect": "~0.9.13",
-      "lodash": "~3.10.0"
+      "lodash": "~3.10.0",
+      "d3": "~3.5.6"
   }
 }
