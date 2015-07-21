@@ -1,7 +1,7 @@
 var tempus = tempus || {};
 
 tempus.MsaCollection = Backbone.Collection.extend({
-    model: tempus.Msa,
+    model: tempus.MsaModel,
     url: "groups.json",
 
     initialize: function() {
@@ -82,7 +82,7 @@ tempus.MsaCollection = Backbone.Collection.extend({
                     function(arr, name) {
                         var shape = geojson[name.replace(/ MSA$/, '')] || {};
 
-                        arr[arr.length] = new tempus.Msa({
+                        arr[arr.length] = new tempus.MsaModel({
                             name: name,
                             shape: shape
                         });
