@@ -110,9 +110,10 @@ tempus.d3TimeSeries = function(ts) {
         svg.selectAll("g .y.axis")
             .call(yAxis);
 
-        // Remove old lines, create new lines
+        // Remove old lines/points, create new lines/points
         _.each(datasets, function(dataset) {
             svg.selectAll(".line." + dataset.label).remove();
+            svg.selectAll(".point." + dataset.label).remove();
 
             var path = svg.selectAll(".line ." + dataset.label)
                     .data([dataset.data], function(d) { return d; });
@@ -121,6 +122,14 @@ tempus.d3TimeSeries = function(ts) {
                 .append("path")
                 .attr("class", "line " + dataset.label)
                 .attr("d", line);
+
+            svg.selectAll("point-" + dataset.label)
+                .data(dataset.data)
+                .enter().append("svg:circle")
+                .attr("class", "point " + dataset.label)
+                .attr("cx", function(d) { return x(d[ts.x]); })
+                .attr("cy", function(d) { return y(d[ts.y]); })
+                .attr("r", 3);
         });
     }
 
