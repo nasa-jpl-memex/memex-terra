@@ -33,6 +33,7 @@ tempus.FormView = Backbone.View.extend({
             return;
         }
 
+        // @todo add a removal of old tsanalysis views?
         this.dd = new tempus.TsAnalysisView({
             model: new tempus.TsAnalysisModel({
                 location: location,

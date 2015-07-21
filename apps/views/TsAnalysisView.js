@@ -46,6 +46,14 @@ tempus.TsAnalysisView = Backbone.View.extend({
         tempus.mapView.clearMsaFeatureLayer();
         this.$el.html('');
 
+        var similarityHtml = this.similaritiesSummaryTemplate({
+            msa: this.model.get('location').get('name'),
+            similarMsas: _.invoke(this.model.get('similarModels'), 'get', 'name')
+        });
+
+
+        tempus.formView.$el.find('#similarities-summary').html(similarityHtml);
+
         // Create primary MSA outline
         tempus.formView.createMsaView(this.model.get('location'),
                                       function(shape) {
@@ -84,6 +92,7 @@ tempus.TsAnalysisView = Backbone.View.extend({
                 selected: this.groupedBy
             }));
 
+            // @todo shouldn't this be saved to allow redrawing on the same svg?
             tempus.d3TimeSeries(opts);
 
             $('#ts-analysis-overlay input[name="daterangepicker"]').daterangepicker({
