@@ -152,7 +152,6 @@ tempus.TsAnalysisModel = Backbone.Model.extend({
         });
 
         this.set('tsDisplayData', datasets);
-        this.trigger('change:tsDisplayData');
     },
 
     // Gets the min/max date from the displayed time series data

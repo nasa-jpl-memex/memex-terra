@@ -8,21 +8,20 @@ tempus.TsAnalysisView = Backbone.View.extend({
 
     initialize: function(options) {
         this.groupedBy = 'monthly';
+        // The data needs to be grouped for the first rendering
+        this.model.groupedBy(this.groupedBy);
+
+        // Add event listener for future changes to display data
         this.model.on('change:tsDisplayData', this.render, this);
 
         $('#ts-analysis-overlay').draggable();
 
         this.similaritiesSummaryTemplate = _.template($('#similarities-summary-template').html());
 
-        // The data needs to be grouped for the first rendering
-        this.model.groupedBy(this.groupedBy);
         this.render();
     },
 
-    // Group each dataset, then set tsDisplayData which will trigger the re-render
     changeGrouping: function(event) {
-        var groupedDatasets = this.model.get('tsData');
-
         this.groupedBy = $(event.currentTarget).find('option:selected').val();
         this.model.groupedBy(this.groupedBy);
     },
@@ -44,7 +43,6 @@ tempus.TsAnalysisView = Backbone.View.extend({
         var _this = this;
 
         tempus.mapView.clearMsaFeatureLayer();
-        this.$el.html('');
 
         var similarityHtml = this.similaritiesSummaryTemplate({
             msa: this.model.get('location').get('name'),
@@ -77,31 +75,37 @@ tempus.TsAnalysisView = Backbone.View.extend({
 
         // Draw the time series and save the function for updating
         if (!_.isEmpty(this.model.get('tsDisplayData'))) {
-            var dateExtent = this.model.dateExtent();
-            var opts = _.merge(
-                {
-                    // @todo more selector nonsense
-                    selector: '#ts-analysis-overlay',
-                    x: 'date',
-                    y: 'value'},
-                {
-                    datasets: this.model.get('tsDisplayData')
-                });
-
-            this.$el.html(_.template($('#ts-analysis-overlay-template').html())({
-                selected: this.groupedBy
+            // Setup group picker, time range picker
+            this.$el.find('#ts-analysis-overlay-options').html(
+                _.template($('#ts-analysis-overlay-options-template').html())({
+                    selected: this.groupedBy
             }));
 
-            // @todo shouldn't this be saved to allow redrawing on the same svg?
-            tempus.d3TimeSeries(opts);
-
+            var dateExtent = this.model.dateExtent();
             $('#ts-analysis-overlay input[name="daterangepicker"]').daterangepicker({
                 startDate: dateExtent[0],
                 endDate: dateExtent[1]
             }, function(start, end) {
                 _this.model.spanningDate(start, end, _this.groupedBy);
             });
-            // On enter of datepicker, it will re-render this plot.
+
+            // Draw (or redraw) graph
+            if (_.isFunction(this.redraw)) {
+                this.redraw(this.model.get('tsDisplayData'));
+            } else {
+                // Draw the graph with the data
+                var opts = _.merge(
+                    {
+                        // @todo more selector nonsense
+                        selector: '#ts-analysis-overlay .plot',
+                        x: 'date',
+                        y: 'value'},
+                    {
+                        datasets: this.model.get('tsDisplayData')
+                    });
+
+                this.redraw = tempus.d3TimeSeries(opts);
+            }
         }
     }
 });
