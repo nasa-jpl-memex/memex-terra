@@ -81,7 +81,13 @@ a {
 
 #ts-analysis-overlay-options {
     position: absolute;
-    left: 680px;
+    left: 565px;
+    padding:10px;
+}
+
+#ts-analysis-grouping {
+    float: right;
+    margin-bottom: 5px;
 }
 
 #action-form {

@@ -60,6 +60,7 @@ tempus.d3TimeSeries = function(ts) {
 
     var xAxis = d3.svg.axis()
             .scale(x)
+            .ticks(8)
             .orient("bottom");
 
     var yAxis = d3.svg.axis()
