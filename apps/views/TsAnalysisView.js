@@ -47,6 +47,17 @@ tempus.TsAnalysisView = Backbone.View.extend({
         }
     },
 
+    // This is a bit sloppy, basically we want to recreate a new backbone view for each analysis,
+    // so we need to remove and do some templating so event listeners are gone from previous view
+    remove: _.wrap(
+        Backbone.View.prototype.remove,
+        function(parentRemove) {
+            parentRemove.apply(this);
+
+            $('body').append('<div id="ts-analysis-overlay"><div id="ts-analysis-overlay-options"></div><div class="plot"></div></div>');
+            $('#ts-analysis-overlay').hide();
+        }),
+
     render: function(focus) {
         var _this = this;
 
@@ -116,6 +127,8 @@ tempus.TsAnalysisView = Backbone.View.extend({
 
                 this.redraw = tempus.d3TimeSeries(opts);
             }
+
+            this.$el.show();
         }
     }
 });
