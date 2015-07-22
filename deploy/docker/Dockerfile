@@ -3,8 +3,6 @@ MAINTAINER Aashish Chaudhary <aashish.chaudhary@kitware.com>
 
 EXPOSE 8001
 
-ENV KWDEMO_KEY geoinfoSpace
-
 # bower does't work particularly well as root, so we create a non-root user
 # called kwuser, but give it sudo ability.
 RUN adduser --disabled-password --gecos '' kwuser && \
@@ -27,12 +25,10 @@ RUN ln -s `which nodejs` /usr/bin/node
 
 RUN npm install -g bower
 
-COPY makelocalcfg.py /home/kwuser/makelocalcfg.py
 USER root
-RUN python /home/kwuser/makelocalcfg.py > /etc/girder.cfg
+COPY etc/girder.cfg /etc/girder.cfg
 
 USER kwuser
-
 WORKDIR /home/kwuser
 
 RUN git clone --depth 1 -b tempus https://github.com/Kitware/SMQTK.git

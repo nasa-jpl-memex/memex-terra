@@ -1,22 +1,24 @@
 containers:
-    database:
-        image: mongo
-        run:
-            publish: ["27017:27017"]
-            volume: ["/data/mongo:/data/db"]
-            detach: true
-    girder:
-        image: girder/girder
-        run:
-            publish: ["8080:8080"]
-            link: ["database:database"]
-            cmd: "--database mongodb://database:27017/girder"
-            detach: true
-    tempus:
-        build: docker
-        run:
-            publish: ["8001:8001"]
-            detach: true
+  database:
+    image: mongo
+    run:
+      publish: ["27017:27017"]
+      volume: ["/data/mongo:/data/db"]
+      detach: true
+  girder:
+    image: girder/girder
+    run:
+      publish: ["8080:8080"]
+      link: ["database:database"]
+      cmd: "--database mongodb://database:27017/girder"
+      detach: true
+  tempus:
+    dockerfile: docker
+    image: kitware/tempus
+    run:
+      publish: ["8001:8001"]
+      link: ["database:database"]
+      detach: true
 hooks:
   database:
     post-start: sleep 5 # wait for mongo to start before starting girder
