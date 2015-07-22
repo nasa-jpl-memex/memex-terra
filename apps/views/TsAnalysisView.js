@@ -18,7 +18,7 @@ tempus.TsAnalysisView = Backbone.View.extend({
 
         this.similaritiesSummaryTemplate = _.template($('#similarities-summary-template').html());
 
-        this.render();
+        this.render(true);
     },
 
     changeGrouping: function(event) {
@@ -47,7 +47,7 @@ tempus.TsAnalysisView = Backbone.View.extend({
         }
     },
 
-    render: function() {
+    render: function(focus) {
         var _this = this;
 
         this.clear();
@@ -79,7 +79,9 @@ tempus.TsAnalysisView = Backbone.View.extend({
         });
 
         // Focus on bounding box of MSAs
-        this.focus();
+        if (focus === true) {
+            this.focus();
+        }
 
         // Draw the time series and save the function for updating
         if (!_.isEmpty(this.model.get('tsDisplayData'))) {
