@@ -13,8 +13,7 @@ containers:
       cmd: "--database mongodb://database:27017/girder"
       detach: true
   tempus:
-    dockerfile: docker
-    image: kitware/tempus
+    image: opengeoscience/smqtk-tempus
     run:
       publish: ["8001:8001"]
       link: ["database:database"]
