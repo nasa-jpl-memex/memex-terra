@@ -32,12 +32,12 @@
         </script>
 
         <script type="text/template" id="ts-analysis-overlay-options-template">
-            <select id="ts-analysis-grouping">
+            <select id="ts-analysis-grouping" class="form-control">
                 <option value="monthly" <% if (selected && selected === 'monthly') { print('selected'); } %>>Monthly</option>
                 <option value="weekly" <% if (selected && selected === 'weekly') { print('selected'); } %>>Weekly</option>
                 <option value="daily" <% if (selected && selected === 'daily') { print('selected'); } %>>Daily</option>
             </select>
-            <input type="text" name="daterangepicker" />
+            <input type="text" class="form-control" name="daterangepicker" />
         </script>
 
         <script type="text/javascript" src="../src/bower_components/jquery/dist/jquery.js"></script>
