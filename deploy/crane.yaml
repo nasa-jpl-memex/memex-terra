@@ -1,19 +1,19 @@
 containers:
   database:
-    image: mongo
+    image: mongo:3.0.4
     run:
       expose: [27017]
       volume: ["/data/mongo:/data/db"]
       detach: true
   girder:
-    image: girder/girder
+    image: girder/girder:1.3.1
     run:
       expose: [8080]
       link: ["database:database"]
       cmd: "--database mongodb://database:27017/girder"
       detach: true
   tempus:
-    image: opengeoscience/smqtk-tempus
+    image: opengeoscience/smqtk-tempus:latest
     run:
       publish: ["8001:8001"]
       link: ["database:database"]
