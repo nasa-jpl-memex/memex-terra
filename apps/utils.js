@@ -43,14 +43,157 @@ tempus.ajax = function(options, useCache) {
     }
 };
 
+// This assumes a dataset in the following format:
+/**
+ comparison: [{counts: monthdate}]
+ target: [{counts: monthdate}]
+ u'diff_in_diff': {u'b': [-11.0152],
+ u'p': [0.0759],
+ u'se': [6.0837],
+ u't': [-1.8106]}
+ 'selector': '#some-div'
+ **/
+tempus.d3GroupedBar = function(gb) {
+    var groupedCounts = gb.comparison.concat(gb.target);
+
+    var margin = {top: 20, right: 20, bottom: 70, left: 50},
+        width = 600 - margin.left - margin.right,
+        height = 330 - margin.top - margin.bottom;
+
+    // @todo this should be a time scale, but that makes rangeRoundBands harder to use
+    var x0 = d3.scale.ordinal()
+            .rangeRoundBands([0, width], 0.1);
+
+    var x1 = d3.scale.ordinal();
+
+    var y = d3.scale.linear()
+            .range([height, 0]);
+
+    var xAxis = d3.svg.axis()
+            .scale(x0)
+    // This is a hack so it shows proper year/month regardless of location
+            .tickFormat(function(d) {
+                return d3.time.format("%b %Y")(new Date(d + "1"));
+            })
+            .orient("bottom");
+
+    var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left")
+            .tickFormat(d3.format("d"));
+
+    var svg = d3.select(gb.selector).append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    x0.domain(groupedCounts.map(function(d) { return d.monthdate; }));
+    x1.domain(['Target', 'Comparison']).rangeRoundBands([0, x0.rangeBand()]);
+    y.domain([0, d3.max(groupedCounts, function(d) { return d.counts; })]);
+
+
+    // This is another hack which is the result of using
+    // string timestamps as ordinals. @todo
+    // Comparison/Target are always the same length, with the same dates, sorted
+    function firstDataPointIncludingOrAfterEventDate() {
+        var thisDate;
+        var eventDate = new Date(gb.eventDate);
+        var ret = false;
+
+        _.each(gb.comparison, function(dataPoint) {
+            thisDate = new Date(dataPoint.monthdate);
+
+            // This is a data point in the same month/year
+            if ((thisDate.getUTCMonth() == eventDate.getUTCMonth() &&
+                 thisDate.getUTCFullYear() == eventDate.getUTCFullYear()) ||
+                // Or we're past it - so start here
+                thisDate > eventDate) {
+                ret = dataPoint.monthdate;
+                return false; // break out of loop
+            }
+        });
+
+        return ret;
+    }
+
+    // Shaded "after" indicator
+    var xAfter = firstDataPointIncludingOrAfterEventDate();
+    xAfter = (xAfter) ? x0(xAfter) : false;
+    if (xAfter) {
+        svg.append("rect")
+            .attr("x", xAfter)
+            .attr("fill", "#ededed")
+            .attr("width", width - xAfter)
+            .attr("height", height);
+    }
+
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis)
+        .selectAll("text")
+        .style("text-anchor", "end")
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em")
+        .attr("transform", "rotate(-65)" );
+
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis)
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text("Ads");
+
+    // for each grouped counts (2 bars)
+    var counts = svg.selectAll(".counts")
+            .data(gb.data)
+            .enter().append("g")
+            .attr("class", "g")
+            .attr("transform", function(d) { return "translate(" + x0(d.monthdate) + ",0)"; });
+
+    counts.selectAll("rect")
+        .data(function(d) { return [{count: d.Target, type: 'Target'},
+                                    {count: d.Comparison, type: 'Comparison'}]; })
+        .enter().append("rect")
+        .attr("width", x1.rangeBand())
+        .attr("x", function(d) { return x1(d.type); })
+        .attr("y", function(d) { return y(d.count); })
+        .attr("height", function(d) { return height - y(d.count); })
+        .style("fill", function(d) { return d.type == 'Target' ? '#d62728' : '#ff7f0e'; });
+
+
+    var legend = svg.selectAll(".legend")
+            .data([{variable: 'b',
+                    value: gb.stats.b},
+                   {variable: 'se',
+                    value: gb.stats.se},
+                   {variable: 'p',
+                    value: gb.stats.p}])
+            .enter().append("g")
+            .attr("class", "legend")
+            .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+
+    legend.append("text")
+        .attr("x", width - 5)
+        .attr("y", 9)
+        .attr("dy", ".35em")
+        .style("text-anchor", "end")
+        .text(function(d) { return d.variable + " = " + d.value.toString(); });
+};
+
 tempus.d3TimeSeries = function(ts) {
     var data = _.reduce(ts.datasets, function(arr, dataset) {
         return arr.concat(dataset.data);
     }, []);
 
     var margin = {top: 20, right: 20, bottom: 30, left: 50},
-        width = 750 - margin.left - margin.right,
-        height = 500 - margin.top - margin.bottom;
+        width = 600 - margin.left - margin.right,
+        height = 330 - margin.top - margin.bottom;
 
     var x = d3.time.scale()
             .range([0, width]);

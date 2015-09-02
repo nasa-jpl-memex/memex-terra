@@ -54,11 +54,14 @@
         <script src="utils.js"></script>
         <script type="text/javascript" src="models/MsaModel.js"></script>
         <script type="text/javascript" src="models/TsAnalysisModel.js"></script>
+        <script type="text/javascript" src="models/DdAnalysisModel.js"></script>
         <script type="text/javascript" src="collections/MsaCollection.js"></script>
         <script type="text/javascript" src="views/FormView.js"></script>
+        <script type="text/javascript" src="views/DdFormView.js"></script>
         <script type="text/javascript" src="views/MapView.js"></script>
         <script type="text/javascript" src="views/MsaView.js"></script>
         <script type="text/javascript" src="views/TsAnalysisView.js"></script>
+        <script type="text/javascript" src="views/DdAnalysisView.js"></script>
         <script src="tempus.js"></script>
 
 
@@ -73,10 +76,45 @@
         <link rel="stylesheet" type="text/css" href="../src/bower_components/bootstrap-daterangepicker/daterangepicker.css" />
     </head>
     <body>
-        <div id="action-form" class="gs-selection"></div>
+        <div id="analyses-tabs" class="gs-selection">
+            <ul>
+                <li><a href="#tabs-1">Comparison</a></li>
+                <li><a href="#tabs-2">Diff in diff</a></li>
+            </ul>
+            <div id="tabs-container">
+                <div id="tabs-1">
+                    <div id="action-form"></div>
+                </div>
+                <div id="tabs-2">
+                    <div id="dd-action-form">
+                        <form class="form-inline" id="dd-select-form">
+                            <div class="form-group">
+                                Target:<br />
+                                <select class="form-control" id="dd-select-location">
+                                    <option value="" disabled selected>Location</option>
+                                </select>
+                                Compare:<br />
+                                <select class="form-control" id="dd-select-compare-location" multiple="multiple"></select>
+                                Event Date: <br />
+                                <input type="text" class="form-control" name="daterangepicker" />
+
+                                <div class="gs-display-inline">
+                                    <button class="btn btn-primary gs-spinner-text" type="submit">Run</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div id="map"></div>
         <div id="ts-analysis-overlay">
             <div id="ts-analysis-overlay-options"></div>
+            <div class="plot"></div>
+        </div>
+        <div id="dd-analysis-overlay">
+            <div id="dd-analysis-overlay-options"></div>
             <div class="plot"></div>
         </div>
     </body>

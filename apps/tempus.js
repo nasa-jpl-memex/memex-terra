@@ -27,8 +27,11 @@ $(function () {
 
     tempus.appRouter = new tempus.AppRouter();
     tempus.formView = new tempus.FormView();
+    tempus.ddFormView = new tempus.DdFormView();
     tempus.mapView = new tempus.MapView();
     tempus.msaCollection = new tempus.MsaCollection();
 
     Backbone.history.start();
+
+    $('#analyses-tabs').tabs();
 });

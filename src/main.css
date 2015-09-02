@@ -24,7 +24,7 @@ body {
     padding-bottom: 0px;
 }
 
-#gs-select-location {
+.gs-select-location {
     display:block;
     margin-bottom:5px;
 }
@@ -37,10 +37,20 @@ a {
     display: inline;
 }
 
+#analyses-tabs {
+    padding: 0px;
+    margin: 10px;
+    opacity: .9;
+}
+
+#tabs-container {
+    width: 465px;
+}
+
 #ts-analysis-overlay {
     position:absolute;
-    top:250px;
-    left:20px;
+    top:313px;
+    left:8px;
     background-color: #ffffff;
     z-index: 999;
     opacity: .9;
@@ -49,6 +59,20 @@ a {
     border-radius:4px;
     display: none;
 }
+
+#dd-analysis-overlay {
+    position:absolute;
+    top:663px;
+    left:8px;
+    background-color: #ffffff;
+    z-index: 999;
+    opacity: .9;
+    border: 2px solid #4d4d4d;
+    padding: 5px;
+    border-radius:4px;
+    display: block;
+}
+
 
 .ui-draggable {
     cursor: pointer;
@@ -82,7 +106,7 @@ a {
 
 #ts-analysis-overlay-options {
     position: absolute;
-    left: 565px;
+    left: 355px;
     padding:10px;
 }
 
@@ -91,12 +115,8 @@ a {
     margin-bottom: 5px;
 }
 
-#action-form {
+.action-form {
     background-color: #fff;
-    margin: 10px;
-    opacity: .95;
-    border-radius: 4px;
-    border: 1px solid #4d4d4d;
 }
 
 #similarities-summary {

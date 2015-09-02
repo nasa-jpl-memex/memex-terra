@@ -15,10 +15,14 @@ tempus.MsaCollection = Backbone.Collection.extend({
         });
     },
 
+    // @todo shouldn't this be handled in a view?
     populateDropdown: function() {
         _.each(this._sortedModels(), function(model) {
             if (!_.isEmpty(model.get('shape'))) {
-                $("#gs-select-location").append("<option>" + model.get('name'));
+                $("#gs-select-location, #dd-select-location").append("<option>" + model.get('name'));
+                $('#dd-select-compare-location').append($('<option></option>')
+                                                        .attr('value', model.get('name'))
+                                                        .text(model.get('name')));
             } else {
                 console.log('Skipping MSA ' + model.get('name') + ' (No shape found).');
             }
