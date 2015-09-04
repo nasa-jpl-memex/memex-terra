@@ -11,7 +11,8 @@ tempus.DdFormView = Backbone.View.extend({
         this.render();
     },
 
-    runDdAnalysis: function() {
+    runDdAnalysis: function(event) {
+        event.preventDefault();
         if (!_.isUndefined(this.ddAnalysisView)) {
             this.ddAnalysisView.remove();
             this.ddAnalysisView = undefined;
