@@ -9,6 +9,9 @@ def install_crane():
     if not exists('crane'):
         run('bash -c "`curl -sL https://raw.githubusercontent.com/michaelsauter/crane/master/download.sh`"')
 
+@task
+def status():
+    sudo('docker ps')
 
 @task
 def deploy():
@@ -18,7 +21,6 @@ def deploy():
     sudo('./crane lift')
 
     sudo('docker ps')
-
 
 @task
 def update():
