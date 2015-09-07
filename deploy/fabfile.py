@@ -2,7 +2,7 @@ from fabric.api import sudo, run
 from fabric.contrib.files import exists
 from fabric.decorators import task
 
-crane_file = 'https://raw.githubusercontent.com/Kitware/SMQTK/tempus/python/smqtk/web/geospace/deploy/crane.yaml'
+crane_file = 'https://raw.githubusercontent.com/memex-explorer/memex-terra/master/deploy/crane.yaml'
 
 
 def install_crane():

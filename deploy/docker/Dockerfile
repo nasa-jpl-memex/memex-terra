@@ -31,12 +31,12 @@ COPY etc/girder.cfg /etc/girder.cfg
 USER kwuser
 WORKDIR /home/kwuser
 
-RUN git clone --depth 1 -b tempus https://github.com/Kitware/SMQTK.git
+RUN git clone --depth 1 https://github.com/memex-explorer/memex-terra.git
+WORKDIR /home/kwuser/memex-terra
 
-WORKDIR /home/kwuser/SMQTK/python/smqtk/web/geospace
 RUN sudo pip install -r requirements.txt
 
-WORKDIR /home/kwuser/SMQTK/python/smqtk/web/geospace/src
+WORKDIR /home/kwuser/memex-terra/src
 RUN bower update
 
 CMD ["python", "main.py"]

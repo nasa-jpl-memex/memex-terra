@@ -1,6 +1,6 @@
 {
   "name": "geospace",
-  "homepage": "https://github.com/Kitware/SMQTK",
+  "homepage": "https://github.com/memex-explorer/memex-terra",
   "ignore": [
     "**/.*",
     "node_modules",
