@@ -28,6 +28,8 @@ The deploy task assumes that ```docker``` is installed on the target machine.
 
 It sets up 3 containers: one for mongodb, girder, and terra.
 
+Note: The following commands should be run from the ```deploy``` directory.
+
 To deploy to a specific host(or hosts), over ssh:
 ```
 fab --hosts=some-host-1,some-host-2 deploy
