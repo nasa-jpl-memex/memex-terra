@@ -1,0 +1,4 @@
+*.pyc
+*.pyo
+
+src/bower_components/
