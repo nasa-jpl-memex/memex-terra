@@ -1,6 +1,6 @@
-var tempus = tempus || {};
+var terra = terra || {};
 
-tempus.DdAnalysisView = Backbone.View.extend({
+terra.DdAnalysisView = Backbone.View.extend({
     el: '#dd-analysis-overlay',
 
     initialize: function(options) {
@@ -10,11 +10,11 @@ tempus.DdAnalysisView = Backbone.View.extend({
 
     render: function() {
         if (!this.model.get('ddData')) {
-            tempus.error("No diff in diff data available");
+            terra.error("No diff in diff data available");
             return;
         }
 
-        tempus.d3GroupedBar(_.merge({'selector': '#dd-analysis-overlay .plot',
+        terra.d3GroupedBar(_.merge({'selector': '#dd-analysis-overlay .plot',
                                      'eventDate': this.model.getEventDateAsStr()},
                                     this.model.get('ddData')));
 

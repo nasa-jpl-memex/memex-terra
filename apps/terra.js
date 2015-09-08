@@ -1,14 +1,14 @@
-var tempus = tempus || {};
+var terra = terra || {};
 
 // @todo all ajax calls need error: and nice alerts
 
-tempus.useCache = true;
-tempus.defaultCenter = [-98.0, 39.5];
+terra.useCache = true;
+terra.defaultCenter = [-98.0, 39.5];
 
 $(function () {
     'use strict';
 
-    tempus.AppRouter = Backbone.Router.extend({
+    terra.AppRouter = Backbone.Router.extend({
         routes: {
             ':msa/:covars': 'index'
         },
@@ -21,15 +21,15 @@ $(function () {
                 $('#gs-select-covar').multiselect('refresh');
             });
 
-            tempus.formView.runTsAnalysis(msa, covars);
+            terra.formView.runTsAnalysis(msa, covars);
         }
     });
 
-    tempus.appRouter = new tempus.AppRouter();
-    tempus.formView = new tempus.FormView();
-    tempus.ddFormView = new tempus.DdFormView();
-    tempus.mapView = new tempus.MapView();
-    tempus.msaCollection = new tempus.MsaCollection();
+    terra.appRouter = new terra.AppRouter();
+    terra.formView = new terra.FormView();
+    terra.ddFormView = new terra.DdFormView();
+    terra.mapView = new terra.MapView();
+    terra.msaCollection = new terra.MsaCollection();
 
     Backbone.history.start();
 

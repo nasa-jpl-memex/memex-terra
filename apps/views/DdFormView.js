@@ -1,6 +1,6 @@
-var tempus = tempus || {};
+var terra = terra || {};
 
-tempus.DdFormView = Backbone.View.extend({
+terra.DdFormView = Backbone.View.extend({
     el: '#dd-action-form',
 
     events: {
@@ -20,8 +20,8 @@ tempus.DdFormView = Backbone.View.extend({
 
         // @todo this will need to mimic runTsAnalysis in terms of removal
         // @todo need to start doing validation on all of these forms
-        this.ddAnalysisView = new tempus.DdAnalysisView({
-            model: new tempus.DdAnalysisModel({
+        this.ddAnalysisView = new terra.DdAnalysisView({
+            model: new terra.DdAnalysisModel({
                 targetLocation: $('#dd-select-location > option:selected').val(),
                 comparisonLocations: $('#dd-select-compare-location').val(),
                 eventDate: new Date($('#dd-action-form input[name="daterangepicker"]').val())

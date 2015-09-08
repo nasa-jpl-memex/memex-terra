@@ -1,6 +1,6 @@
-var tempus = tempus || {};
+var terra = terra || {};
 
-tempus.DdAnalysisModel = Backbone.Model.extend({
+terra.DdAnalysisModel = Backbone.Model.extend({
     initialize: function(options) {
         if (!_.has(options, 'targetLocation') ||
             !_.has(options, 'comparisonLocations') ||
@@ -13,10 +13,10 @@ tempus.DdAnalysisModel = Backbone.Model.extend({
         }
 
         // Load locations as models
-        this.set('targetLocation', tempus.msaCollection.get(this.get('targetLocation')));
+        this.set('targetLocation', terra.msaCollection.get(this.get('targetLocation')));
         this.set('comparisonLocations', _.map(this.get('comparisonLocations'),
-                                              tempus.msaCollection.get,
-                                              tempus.msaCollection));
+                                              terra.msaCollection.get,
+                                              terra.msaCollection));
 
         // @todo lazy load this instead?
         this.fetchDiffInDiffData();
@@ -31,7 +31,7 @@ tempus.DdAnalysisModel = Backbone.Model.extend({
     fetchDiffInDiffData: function() {
         var _this = this;
 
-        tempus.ajax({
+        terra.ajax({
             url: 'https://tempus-demo.ngrok.com/api/diffindiff',
             data: {
                 target: _this.get('targetLocation').id + " MSA",

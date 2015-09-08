@@ -1,6 +1,6 @@
-var tempus = tempus || {};
+var terra = terra || {};
 
-tempus.MsaModel = Backbone.Model.extend({
+terra.MsaModel = Backbone.Model.extend({
     initialize: function(options) {
         var name = options.name.replace(/ MSA$/, '');
 

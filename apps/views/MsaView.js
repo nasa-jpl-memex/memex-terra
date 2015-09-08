@@ -1,6 +1,6 @@
-var tempus = tempus || {};
+var terra = terra || {};
 
-tempus.MsaView = Backbone.View.extend({
+terra.MsaView = Backbone.View.extend({
     initialize: function(options) {
         this.render(options);
     },
@@ -9,8 +9,8 @@ tempus.MsaView = Backbone.View.extend({
         var shape = this.model.get('shape');
 
         // Create an msa feature layer if one doesn't already exist on the map
-        if (!_.has(tempus.mapView, 'msaFeatureLayer')) {
-            tempus.mapView.msaFeatureLayer = tempus.map.createLayer('feature');
+        if (!_.has(terra.mapView, 'msaFeatureLayer')) {
+            terra.mapView.msaFeatureLayer = terra.map.createLayer('feature');
         }
         // Let the user override any properties on the shape, useful for styling
         if (options.shapeFilter) {
@@ -18,9 +18,9 @@ tempus.MsaView = Backbone.View.extend({
         }
 
         geo.createFileReader('jsonReader', {
-            layer: tempus.mapView.msaFeatureLayer
+            layer: terra.mapView.msaFeatureLayer
         }).read(JSON.stringify(shape), function() {
-            tempus.map.draw();
+            terra.map.draw();
         });
     }
 });

@@ -1,6 +1,6 @@
-var tempus = tempus || {};
+var terra = terra || {};
 
-tempus.error = function(message) {
+terra.error = function(message) {
     if (message !== undefined) {
         console.log(message);
     } else {
@@ -8,19 +8,19 @@ tempus.error = function(message) {
     }
 };
 
-tempus.ajax = function(options, useCache) {
+terra.ajax = function(options, useCache) {
     var ajaxOptionsDefaults = {
         data: {},
         async: false,
         cache: false,
         timeout: 1500,
-        error: _.partial(tempus.error, 'An ajax request failed.')
+        error: _.partial(terra.error, 'An ajax request failed.')
     };
 
     options = _.merge(options, ajaxOptionsDefaults);
 
     var cachedRequest = localStorage.getItem(options.url + JSON.stringify(options.data));
-    useCache = (useCache === undefined) ? tempus.useCache : useCache;
+    useCache = (useCache === undefined) ? terra.useCache : useCache;
 
     if (useCache && cachedRequest && options.hasOwnProperty('success')) {
         options.success(JSON.parse(cachedRequest));
@@ -53,7 +53,7 @@ tempus.ajax = function(options, useCache) {
  u't': [-1.8106]}
  'selector': '#some-div'
  **/
-tempus.d3GroupedBar = function(gb) {
+terra.d3GroupedBar = function(gb) {
     var groupedCounts = gb.comparison.concat(gb.target);
 
     var margin = {top: 20, right: 20, bottom: 70, left: 50},
@@ -186,7 +186,7 @@ tempus.d3GroupedBar = function(gb) {
         .text(function(d) { return d.variable + " = " + d.value.toString(); });
 };
 
-tempus.d3TimeSeries = function(ts) {
+terra.d3TimeSeries = function(ts) {
     var data = _.reduce(ts.datasets, function(arr, dataset) {
         return arr.concat(dataset.data);
     }, []);

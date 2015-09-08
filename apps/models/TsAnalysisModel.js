@@ -1,8 +1,8 @@
-var tempus = tempus || {};
+var terra = terra || {};
 
-tempus.TsAnalysisModel = Backbone.Model.extend({
+terra.TsAnalysisModel = Backbone.Model.extend({
     initialize: function(options) {
-        this.set('location', tempus.msaCollection.get(options.location));
+        this.set('location', terra.msaCollection.get(options.location));
         this.set('covars', options.covars); // @todo extraneous?
 
         this.fetchTimeSeriesData(options.location, options.covars);
@@ -17,7 +17,7 @@ tempus.TsAnalysisModel = Backbone.Model.extend({
     fetchTimeSeriesData: function(location, covars) {
         var _this = this;
 
-        tempus.ajax({
+        terra.ajax({
             url: 'https://tempus-demo.ngrok.com/api/series',
             data: {
                 table: 'escort_ads',
@@ -34,7 +34,7 @@ tempus.TsAnalysisModel = Backbone.Model.extend({
                     data: data.result
                 }]);
 
-                tempus.ajax({
+                terra.ajax({
                     url: 'https://tempus-demo.ngrok.com/api/comparison',
                     data: {
                         table: 'escort_ads',
@@ -55,7 +55,7 @@ tempus.TsAnalysisModel = Backbone.Model.extend({
                         });
 
                         similarModels = _.map(compData.groups, function(group) {
-                            return tempus.msaCollection.get(group);
+                            return terra.msaCollection.get(group);
                         });
 
                         // Remove all models we don't have a shape for

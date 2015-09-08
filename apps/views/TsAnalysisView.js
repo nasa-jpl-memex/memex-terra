@@ -1,6 +1,6 @@
-var tempus = tempus || {};
+var terra = terra || {};
 
-tempus.TsAnalysisView = Backbone.View.extend({
+terra.TsAnalysisView = Backbone.View.extend({
     el: '#ts-analysis-overlay',
     events: {
         'change #ts-analysis-grouping': 'changeGrouping'
@@ -30,17 +30,17 @@ tempus.TsAnalysisView = Backbone.View.extend({
         var X_SHIFT = function(xCoord) {
             return xCoord - 3;
         };
-        var minsMaxes = tempus.msaCollection.aggregateBoundingBox(
+        var minsMaxes = terra.msaCollection.aggregateBoundingBox(
             [this.model.get('location')].concat(this.model.get('similarModels')));
 
-        tempus.map.bounds({
+        terra.map.bounds({
             lowerLeft: [X_SHIFT(minsMaxes[0][0]), minsMaxes[1][0]],
             upperRight: [X_SHIFT(minsMaxes[0][1]), minsMaxes[1][1]]
         });
     },
 
     clear: function() {
-        tempus.mapView.clearMsaFeatureLayer();
+        terra.mapView.clearMsaFeatureLayer();
 
         if (!_.isUndefined(this.dateRangePicker)) {
             this.dateRangePicker.remove();
@@ -69,10 +69,10 @@ tempus.TsAnalysisView = Backbone.View.extend({
         });
 
 
-        tempus.formView.$el.find('#similarities-summary').html(similarityHtml);
+        terra.formView.$el.find('#similarities-summary').html(similarityHtml);
 
         // Create primary MSA outline
-        tempus.formView.createMsaView(this.model.get('location'),
+        terra.formView.createMsaView(this.model.get('location'),
                                       function(shape) {
                                           shape.features[0].properties.strokeColor = '#d62728';
                                           shape.features[0].properties.strokeWidth = 3;
@@ -81,7 +81,7 @@ tempus.TsAnalysisView = Backbone.View.extend({
 
         // Create similar MSA outlines
         _.each(this.model.get('similarModels'), function(model) {
-            tempus.formView.createMsaView(model.get('name'),
+            terra.formView.createMsaView(model.get('name'),
                                           function(shape) {
                                               shape.features[0].properties.strokeColor = '#ff7f0e';
                                               shape.features[0].properties.strokeWidth = 3;
@@ -125,7 +125,7 @@ tempus.TsAnalysisView = Backbone.View.extend({
                         datasets: this.model.get('tsDisplayData')
                     });
 
-                this.redraw = tempus.d3TimeSeries(opts);
+                this.redraw = terra.d3TimeSeries(opts);
             }
 
             this.$el.show();

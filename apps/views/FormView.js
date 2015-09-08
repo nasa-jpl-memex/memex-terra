@@ -1,6 +1,6 @@
-var tempus = tempus || {};
+var terra = terra || {};
 
-tempus.FormView = Backbone.View.extend({
+terra.FormView = Backbone.View.extend({
     el: '#action-form',
 
     events: {
@@ -8,10 +8,10 @@ tempus.FormView = Backbone.View.extend({
     },
 
     createMsaView: function(msaName, shapeFilter) {
-        var msaModel = tempus.msaCollection.get(msaName);
+        var msaModel = terra.msaCollection.get(msaName);
 
         if (msaName && msaModel) {
-            new tempus.MsaView({
+            new terra.MsaView({
                 model: msaModel,
                 shapeFilter: shapeFilter
             });
@@ -29,7 +29,7 @@ tempus.FormView = Backbone.View.extend({
 
     runTsAnalysis: function(location, covars) {
         if (_.isEmpty(location) || _.isEmpty(covars)) {
-            tempus.error('No location and/or covariables selected.');
+            terra.error('No location and/or covariables selected.');
             return;
         }
 
@@ -38,8 +38,8 @@ tempus.FormView = Backbone.View.extend({
             this.tsAnalysisView = undefined;
         }
 
-        this.tsAnalysisView = new tempus.TsAnalysisView({
-            model: new tempus.TsAnalysisModel({
+        this.tsAnalysisView = new terra.TsAnalysisView({
+            model: new terra.TsAnalysisModel({
                 location: location,
                 covars: covars
             })
@@ -53,7 +53,7 @@ tempus.FormView = Backbone.View.extend({
     render: function() {
         this.$el.html(_.template($('#action-form-template').html(), {}));
 
-        tempus.ajax({
+        terra.ajax({
             url: 'https://tempus-demo.ngrok.com/api',
             async: false,
             dataType: 'json',
@@ -67,6 +67,6 @@ tempus.FormView = Backbone.View.extend({
 
                 $('#gs-select-covar').multiselect();
             }
-        }, tempus.useCache);
+        }, terra.useCache);
     }
 });

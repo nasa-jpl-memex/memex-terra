@@ -1,6 +1,6 @@
-var tempus = tempus || {};
+var terra = terra || {};
 
-tempus.MapView = Backbone.View.extend({
+terra.MapView = Backbone.View.extend({
     el: '#map',
 
     initialize: function() {
@@ -14,27 +14,27 @@ tempus.MapView = Backbone.View.extend({
     },
 
     render: function() {
-        // @todo tempus.map should belong to the mapView
-        tempus.map = geo.map({
+        // @todo terra.map should belong to the mapView
+        terra.map = geo.map({
             node: this.el,
             center: {
-                x: tempus.defaultCenter[0],
-                y: tempus.defaultCenter[1]
+                x: terra.defaultCenter[0],
+                y: terra.defaultCenter[1]
             },
             zoom: 2,
             autoResize: false
         });
 
-        tempus.map.createLayer('osm', {
+        terra.map.createLayer('osm', {
             baseUrl: 'http://otile1.mqcdn.com/tiles/1.0.0/map/'
         });
 
         // should this be moved to initialize?
-        tempus.resize = function() {
+        terra.resize = function() {
             var height = $(window).height(),
                 width  = $("#map").width();
-            tempus.map.resize(0, 0, width, height);
+            terra.map.resize(0, 0, width, height);
         };
-        tempus.resize();
+        terra.resize();
     }
 });

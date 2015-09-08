@@ -1,7 +1,7 @@
-var tempus = tempus || {};
+var terra = terra || {};
 
-tempus.MsaCollection = Backbone.Collection.extend({
-    model: tempus.MsaModel,
+terra.MsaCollection = Backbone.Collection.extend({
+    model: terra.MsaModel,
     url: "groups.json",
 
     initialize: function() {
@@ -62,21 +62,21 @@ tempus.MsaCollection = Backbone.Collection.extend({
         // These should properly use backbone sync
         // and sync should be rewritten to cache on localstorage
         // There is a contrib localstorage backbone lib
-        tempus.ajax({
+        terra.ajax({
             url: this.url,
             data: {},
             async: false,
             success: function(data) {
                 _this.msanames = data.msaname;
             }
-        }, tempus.useCache);
+        }, terra.useCache);
 
         if (this.msanames === undefined || this.msanames.length === 0) {
             alert('Failed to fetch MSAs');
             return;
         }
 
-        tempus.ajax({
+        terra.ajax({
             url: 'msa.geojson',
             data: {},
             async: false,
@@ -86,7 +86,7 @@ tempus.MsaCollection = Backbone.Collection.extend({
                     function(arr, name) {
                         var shape = geojson[name.replace(/ MSA$/, '')] || {};
 
-                        arr[arr.length] = new tempus.MsaModel({
+                        arr[arr.length] = new terra.MsaModel({
                             name: name,
                             shape: shape
                         });
@@ -94,7 +94,7 @@ tempus.MsaCollection = Backbone.Collection.extend({
                         return arr;
                     }, []);
             }
-        }, tempus.useCache);
+        }, terra.useCache);
 
         this.reset(this.temp);
     }
