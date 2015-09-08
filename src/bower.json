@@ -8,11 +8,16 @@
     "test",
     "tests"
   ],
-    "dependencies": {
-      "bootstrap-daterangepicker": "~2.0.2",
-      "backbone": "~1.2.1",
-      "bootstrap-multiselect": "~0.9.13",
-      "lodash": "~3.10.0",
-      "d3": "~3.5.6"
+  "dependencies": {
+    "backbone": "~1.2.1",
+    "bootstrap-daterangepicker": "~2.0.2",
+    "bootstrap-multiselect": "~0.9.13",
+    "d3": "~3.5.6",
+    "geojs": "git://github.com/opengeoscience/geojs.git#e7832e7760cefc",
+    "lodash": "~3.10.0"
+  },
+  "resolutions": {
+    "d3": "~3.5.6",
+    "geojs": "e7832e7760cefc"
   }
 }
