@@ -13,7 +13,7 @@ containers:
       cmd: "--database mongodb://database:27017/girder"
       detach: true
   tempus:
-    image: opengeoscience/smqtk-tempus:latest
+    image: opengeoscience/memex-terra:latest
     run:
       publish: ["8001:8001"]
       link: ["database:database"]
