@@ -98,7 +98,7 @@ terra.TsAnalysisModel = Backbone.Model.extend({
     _grouper: function(groupBy) {
         var grouper = {
             keyFunc: function(d) {
-                return new Date(d.date.getFullYear(), d.date.getMonth());
+                return new Date(d.date.getUTCFullYear(), d.date.getUTCMonth());
             },
             dateToKeyFunc: function(d) {
                 return new Date(d);
@@ -107,7 +107,7 @@ terra.TsAnalysisModel = Backbone.Model.extend({
 
         if (groupBy === 'weekly') {
             grouper.keyFunc = function(d) {
-                return [d.date.getFullYear(), d3.time.format("%U")(d.date)];
+                return [d.date.getUTCFullYear(), d3.time.format("%U")(d.date)];
             };
 
             grouper.dateToKeyFunc = function(d) {
@@ -119,7 +119,7 @@ terra.TsAnalysisModel = Backbone.Model.extend({
             };
         } else if (groupBy === 'daily') {
             grouper.keyFunc = function(d) {
-                return new Date(d.date.getFullYear(), d.date.getMonth(), d.date.getDate());
+                return new Date(d.date.getUTCFullYear(), d.date.getUTCMonth(), d.date.getUTCDate());
             };
 
             grouper.dateToKeyFunc = function(d) {
