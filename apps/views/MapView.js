@@ -21,7 +21,7 @@ terra.MapView = Backbone.View.extend({
                 x: terra.defaultCenter[0],
                 y: terra.defaultCenter[1]
             },
-            zoom: 2,
+            zoom: 5,
             autoResize: false
         });
 
