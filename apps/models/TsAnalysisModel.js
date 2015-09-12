@@ -1,6 +1,6 @@
 var terra = terra || {};
 
-terra.TsAnalysisModel = Backbone.Model.extend({
+terra.TsAnalysisModel = terra.AnalysisModel.extend({
     initialize: function(options) {
         this.set('location', terra.msaCollection.get(options.location));
         this.set('covars', options.covars); // @todo extraneous?
@@ -93,41 +93,6 @@ terra.TsAnalysisModel = Backbone.Model.extend({
                 };
             });
         });
-    },
-
-    _grouper: function(groupBy) {
-        var grouper = {
-            keyFunc: function(d) {
-                return new Date(d.date.getUTCFullYear(), d.date.getUTCMonth());
-            },
-            dateToKeyFunc: function(d) {
-                return new Date(d);
-            }
-        };
-
-        if (groupBy === 'weekly') {
-            grouper.keyFunc = function(d) {
-                return [d.date.getUTCFullYear(), d3.time.format("%U")(d.date)];
-            };
-
-            grouper.dateToKeyFunc = function(d) {
-                // d3 can not parse the week number without the day of week,
-                // so we always pass 0 as the day of week.
-                // see https://github.com/mbostock/d3/issues/1914
-                d += ",0";
-                return d3.time.format("%Y,%U,%w").parse(d);
-            };
-        } else if (groupBy === 'daily') {
-            grouper.keyFunc = function(d) {
-                return new Date(d.date.getUTCFullYear(), d.date.getUTCMonth(), d.date.getUTCDate());
-            };
-
-            grouper.dateToKeyFunc = function(d) {
-                return new Date(d);
-            };
-        }
-
-        return grouper;
     },
 
     groupedBy: function(type, datasets) {

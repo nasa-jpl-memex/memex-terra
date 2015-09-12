@@ -1,6 +1,6 @@
 var terra = terra || {};
 
-terra.DdAnalysisModel = Backbone.Model.extend({
+terra.DdAnalysisModel = terra.AnalysisModel.extend({
     initialize: function(options) {
         if (!_.has(options, 'targetLocation') ||
             !_.has(options, 'comparisonLocations') ||
