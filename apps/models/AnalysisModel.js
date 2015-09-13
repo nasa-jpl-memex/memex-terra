@@ -2,6 +2,7 @@ var terra = terra || {};
 
 terra.AnalysisModel = Backbone.Model.extend({
     _grouper: function(groupBy) {
+        // Defaults to group by month
         var grouper = {
             keyFunc: function(d) {
                 return new Date(d.date.getUTCFullYear(), d.date.getUTCMonth());
@@ -11,7 +12,15 @@ terra.AnalysisModel = Backbone.Model.extend({
             }
         };
 
-        if (groupBy === 'weekly') {
+        if (groupBy === 'yearly') {
+            grouper.keyFunc = function(d) {
+                return d.date.getUTCFullYear();
+            };
+
+            grouper.dateToKeyFunc = function(d) {
+                return new Date(d, 0);
+            };
+        } else if (groupBy === 'weekly') {
             grouper.keyFunc = function(d) {
                 return [d.date.getUTCFullYear(), d3.time.format("%U")(d.date)];
             };
