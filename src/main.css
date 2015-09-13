@@ -115,6 +115,10 @@ a {
     margin-bottom: 5px;
 }
 
+#dd-analysis-overlay-options {
+    margin-left: 50px;
+}
+
 .action-form {
     background-color: #fff;
 }
