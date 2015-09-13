@@ -52,7 +52,7 @@ terra.DdAnalysisView = Backbone.View.extend({
         function(parentRemove) {
             parentRemove.apply(this);
 
-            $('body').append('<div id="dd-analysis-overlay"><div id="dd-analysis-overlay-options"></div><div class="plot"><select id="dd-analysis-grouping" class="form-control"><option value="monthly">Monthly</option><option value="yearly">Yearly</option></select></div></div>');
+            $('body').append('<div id="dd-analysis-overlay"><div id="dd-analysis-overlay-options"></div><div class="plot"></div></div>');
             $('#dd-analysis-overlay').hide();
         })
 });
