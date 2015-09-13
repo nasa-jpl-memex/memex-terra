@@ -4,6 +4,11 @@ terra.DdAnalysisView = Backbone.View.extend({
     el: '#dd-analysis-overlay',
 
     initialize: function(options) {
+        if (!this.model.has('ddData')) {
+            terra.error('No data provided.');
+            return;
+        }
+
         $('#dd-analysis-overlay').draggable();
 
         this.groupedBy = 'monthly';
@@ -16,9 +21,13 @@ terra.DdAnalysisView = Backbone.View.extend({
 
     render: function() {
         if (!_.isEmpty(this.model.get('ddDisplayData'))) {
-            terra.d3GroupedBar(_.merge({'selector': '#dd-analysis-overlay .plot',
-                                        'eventDate': this.model.getEventDateAsStr()},
-                                       this.model.get('ddDisplayData')));
+            if (_.isUndefined(this.redraw)) {
+                this.redraw = terra.d3GroupedBar(_.merge({'selector': '#dd-analysis-overlay .plot',
+                                                          'eventDate': this.model.getEventDateAsStr()},
+                                                         this.model.get('ddDisplayData')));
+            } else {
+                this.redraw(this.model.get('ddDisplayData'));
+            }
 
             this.$el.show();
         }

@@ -86,72 +86,91 @@ terra.d3GroupedBar = function(data) {
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    x0.domain(_.pluck(data.data, 'date'));
-    x1.domain(['Target', 'Comparison']).rangeRoundBands([0, x0.rangeBand()]);
-    y.domain(d3.extent(_.pluck(data.data, 'comparison').concat(_.pluck(data.data, 'target'))));
-    // @todo the plucking can be more efficient
-
-    // for each grouped counts (2 bars)
-    var counts = svg.selectAll(".counts")
-            .data(data.data)
-            .enter().append("g")
-            .attr("class", "g")
-            .attr("transform", function(d) {
-                return "translate(" + x0(d.date) + ",0)";
-            });
-
-    counts.selectAll("rect")
-        .data(function(d) {
-            return [{count: d.target, type: 'Target'},
-                    {count: d.comparison, type: 'Comparison'}];
-        })
-        .enter().append("rect")
-        .attr("width", x1.rangeBand())
-        .attr("x", function(d) { return x1(d.type); })
-        .attr("y", function(d) { return y(d.count); })
-        .attr("height", function(d) { return height - y(d.count); })
-        .style("fill", function(d) { return d.type == 'Target' ? '#d62728' : '#ff7f0e'; });
-
-    // Axes
-    svg.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis)
-        .selectAll("text")
-        .style("text-anchor", "end")
-        .attr("dx", "-.8em")
-        .attr("dy", ".15em")
-        .attr("transform", "rotate(-65)" );
-
-    svg.append("g")
-        .attr("class", "y axis")
-        .call(yAxis)
-        .append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 6)
-        .attr("dy", ".71em")
-        .style("text-anchor", "end");
-
-    // Legend
-    var legend = svg.selectAll(".legend")
-            .data([{variable: 'b',
-                    value: data.stats.b[0]},
-                   {variable: 'se',
-                    value: data.stats.se[0]},
-                   {variable: 'p',
-                    value: data.stats.p[0]}])
-            .enter().append("g")
-            .attr("class", "legend")
-            .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+    function draw(data) {
+        svg.selectAll(".axis").remove();
+        svg.selectAll("rect").remove();
+        // svg.selectAll(".line." + dataset.label).remove();
+        // svg.selectAll(".point." + dataset.label).remove();
 
 
-    legend.append("text")
-        .attr("x", width - 5)
-        .attr("y", 9)
-        .attr("dy", ".35em")
-        .style("text-anchor", "end")
-        .text(function(d) { return d.variable + " = " + d.value.toString(); })
-        .style("text-anchor", "end");
+        x0.domain(_.pluck(data.data, 'date'));
+        x1.domain(['Target', 'Comparison']).rangeRoundBands([0, x0.rangeBand()]);
+        y.domain(d3.extent(_.pluck(data.data, 'comparison').concat(_.pluck(data.data, 'target'))));
+        // @todo the plucking can be more efficient
+
+        // for each grouped counts (2 bars)
+        var counts = svg.selectAll(".counts")
+                .data(data.data)
+                .enter().append("g")
+                .attr("class", "g")
+                .attr("transform", function(d) {
+                    return "translate(" + x0(d.date) + ",0)";
+                });
+
+        counts.selectAll("rect")
+            .data(function(d) {
+                return [{count: d.target, type: 'Target'},
+                        {count: d.comparison, type: 'Comparison'}];
+            })
+            .enter().append("rect")
+            .attr("width", x1.rangeBand())
+            .attr("x", function(d) { return x1(d.type); })
+            .attr("y", function(d) { return y(d.count); })
+            .attr("height", function(d) { return height - y(d.count); })
+            .style("fill", function(d) { return d.type == 'Target' ? '#d62728' : '#ff7f0e'; });
+
+        // Axes
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis)
+            .selectAll("text")
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", ".15em")
+            .attr("transform", "rotate(-65)" );
+
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end");
+
+        // Legend
+        var legend = svg.selectAll(".legend")
+                .data([{variable: 'b',
+                        value: data.stats.b[0]},
+                       {variable: 'se',
+                        value: data.stats.se[0]},
+                       {variable: 'p',
+                        value: data.stats.p[0]}])
+                .enter().append("g")
+                .attr("class", "legend")
+                .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+
+        legend.append("text")
+            .attr("x", width - 5)
+            .attr("y", 9)
+            .attr("dy", ".35em")
+            .style("text-anchor", "end")
+            .text(function(d) { return d.variable + " = " + d.value.toString(); })
+            .style("text-anchor", "end");
+
+        // Event Indicator
+        // svg.append("path")
+        //     .attr("class", "line")
+        //     .style("stroke-dasharray", ("3, 3"))
+        //     .attr("x1", 10)
+        //     .attr("y1", 30);
+    }
+
+    draw(data);
+
+    return draw;
 };
 
 terra.d3TimeSeries = function(ts) {
