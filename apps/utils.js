@@ -86,6 +86,17 @@ terra.d3GroupedBar = function(data) {
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+    var tip = d3.tip()
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function(d) {
+                return "<strong>" + d3.time.format('%b %Y')(d.date) + "</strong><br />" +
+                    "Target: " + d.target + " <br />" +
+                    "Comparison: " + d.comparison;
+            });
+
+    svg.call(tip);
+
     function draw(data) {
         svg.selectAll(".axis").remove();
         svg.selectAll("rect").remove();
@@ -105,7 +116,10 @@ terra.d3GroupedBar = function(data) {
                 .attr("class", "g")
                 .attr("transform", function(d) {
                     return "translate(" + x0(d.date) + ",0)";
-                });
+                })
+                .on('mouseover', tip.show)
+                .on('mouseout', tip.hide);
+
 
         counts.selectAll("rect")
             .data(function(d) {
@@ -128,7 +142,7 @@ terra.d3GroupedBar = function(data) {
             .style("text-anchor", "end")
             .attr("dx", "-.8em")
             .attr("dy", ".15em")
-            .attr("transform", "rotate(-65)" );
+            .attr("transform", "rotate(-65)");
 
         svg.append("g")
             .attr("class", "y axis")
