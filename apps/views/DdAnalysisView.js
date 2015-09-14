@@ -37,7 +37,8 @@ terra.DdAnalysisView = Backbone.View.extend({
 
             if (_.isUndefined(this.redraw)) {
                 this.redraw = terra.d3GroupedBar(_.merge({'selector': '#dd-analysis-overlay .plot',
-                                                          'eventDate': this.model.getEventDateAsStr()},
+                                                          'eventDate': this.model.getEventDateAsStr(),
+                                                          'groupedBy': this.groupedBy},
                                                          this.model.get('ddDisplayData')));
             } else {
                 this.redraw(this.model.get('ddDisplayData'));

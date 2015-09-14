@@ -178,12 +178,53 @@ terra.d3GroupedBar = function(data) {
             .text(function(d) { return d.variable + " = " + d.value.toString(); })
             .style("text-anchor", "end");
 
+        // @todo This is another consequence of using an ordinal scale, instead
+        // of saying "place a line where this date occurs", we have to find the first
+        // point that is applicable to drawing a line. Meaning if it's grouped monthly
+        // and the event date is Jan 10th.. we need to place the line at the Jan month marker.
+        function firstDataPointIncludingOrAfterEventDate() {
+            var thisDate;
+            var eventDate = new Date(data.eventDate);
+            var ret = false;
+
+            _.each(data.data, function(dataPoint) {
+                thisDate = dataPoint.date;
+
+                if (data.groupedBy === 'daily') {
+                    if (thisDate.getUTCDate() === eventDate.getUTCDate()) {
+                        ret = dataPoint.date;
+                        return false;
+                    }
+                } else if (data.groupedBy === 'monthly') {
+                    // This is a data point in the same month/year
+                    if ((thisDate.getUTCMonth() == eventDate.getUTCMonth() &&
+                         thisDate.getUTCFullYear() == eventDate.getUTCFullYear()) ||
+                        // Or we're past it - so start here
+                        thisDate > eventDate) {
+                        ret = dataPoint.date;
+                        return false; // break out of loop
+                    }
+                }
+            });
+
+            return ret;
+        }
+
         // Event Indicator
-        // svg.append("path")
-        //     .attr("class", "line")
-        //     .style("stroke-dasharray", ("3, 3"))
-        //     .attr("x1", 10)
-        //     .attr("y1", 30);
+        var xAfter = firstDataPointIncludingOrAfterEventDate();
+        if (xAfter !== false) {
+            svg.append('line')
+                .attr({
+                    x1: x0(xAfter),
+                    y1: 0,
+                    x2: x0(xAfter),
+                    y2: height,
+                    'stroke-dasharray': '4,4'
+                })
+                .style("stroke-width", 2)
+                .style("stroke", "#000")
+                .style("fill", "none");
+        }
     }
 
     draw(data);
