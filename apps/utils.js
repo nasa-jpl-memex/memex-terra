@@ -67,19 +67,6 @@ terra.d3GroupedBar = function(data) {
     var y = d3.scale.linear()
             .range([height, 0]);
 
-    var xAxis = d3.svg.axis()
-            .scale(x0)
-            .tickFormat(function(d) {
-                return d3.time.format('%b %Y')(new Date(d + "1"));
-                // This is a hack so it shows proper year/month regardless of location
-            })
-            .orient("bottom");
-
-    var yAxis = d3.svg.axis()
-            .scale(y)
-            .orient("left")
-            .tickFormat(d3.format("d"));
-
     var svg = d3.select('#dd-analysis-overlay > .plot').append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
@@ -100,14 +87,31 @@ terra.d3GroupedBar = function(data) {
     function draw(data) {
         svg.selectAll(".axis").remove();
         svg.selectAll("rect").remove();
-        // svg.selectAll(".line." + dataset.label).remove();
-        // svg.selectAll(".point." + dataset.label).remove();
 
+        var xAxis = d3.svg.axis()
+                .scale(x0)
+                .tickFormat(function(d) {
+                    return d3.time.format('%b %Y')(new Date(d + "1"));
+                    // This is a hack so it shows proper year/month regardless of location
+                })
+                .orient("bottom");
+
+        var yAxis = d3.svg.axis()
+                .scale(y)
+                .orient("left")
+                .tickFormat(d3.format("d"));
 
         x0.domain(_.pluck(data.data, 'date'));
         x1.domain(['Target', 'Comparison']).rangeRoundBands([0, x0.rangeBand()]);
         y.domain(d3.extent(_.pluck(data.data, 'comparison').concat(_.pluck(data.data, 'target'))));
         // @todo the plucking can be more efficient
+
+        // Always show roughly 10 labels on the X axis
+        if (data.data.length > 10) {
+            var everyNth = Math.floor(data.data.length / 10);
+
+            xAxis.tickValues(x0.domain().filter(function(d, i) { return !(i % everyNth); }));
+        }
 
         // for each grouped counts (2 bars)
         var counts = svg.selectAll(".counts")

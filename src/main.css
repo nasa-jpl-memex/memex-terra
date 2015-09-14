@@ -77,8 +77,8 @@ a {
 .ui-draggable {
     cursor: pointer;
 }
-#ts-analysis-overlay .axis path,
-#ts-analysis-overlay .axis line {
+.axis path,
+.axis line {
     fill: none;
     stroke: #000;
     shape-rendering: crispEdges;
