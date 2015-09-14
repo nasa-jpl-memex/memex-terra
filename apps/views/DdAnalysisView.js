@@ -29,6 +29,10 @@ terra.DdAnalysisView = Backbone.View.extend({
 
     render: function() {
         if (!_.isEmpty(this.model.get('ddDisplayData'))) {
+            var renderData = _.merge({'selector': '#dd-analysis-overlay .plot',
+                                      'eventDate': this.model.getEventDateAsStr(),
+                                      'groupedBy': this.groupedBy},
+                                     this.model.get('ddDisplayData'));
             // Setup grouping UI
             this.$el.find('#dd-analysis-overlay-options').html(
                 _.template($('#dd-analysis-overlay-options-template').html())());
@@ -36,12 +40,9 @@ terra.DdAnalysisView = Backbone.View.extend({
             this.$el.find('input[value="' + this.groupedBy  + '"]').attr('checked', true);
 
             if (_.isUndefined(this.redraw)) {
-                this.redraw = terra.d3GroupedBar(_.merge({'selector': '#dd-analysis-overlay .plot',
-                                                          'eventDate': this.model.getEventDateAsStr(),
-                                                          'groupedBy': this.groupedBy},
-                                                         this.model.get('ddDisplayData')));
+                this.redraw = terra.d3GroupedBar(renderData);
             } else {
-                this.redraw(this.model.get('ddDisplayData'));
+                this.redraw(renderData);
             }
 
             this.$el.show();

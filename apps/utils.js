@@ -87,6 +87,7 @@ terra.d3GroupedBar = function(data) {
     function draw(data) {
         svg.selectAll(".axis").remove();
         svg.selectAll("rect").remove();
+        svg.selectAll("line").remove();
 
         var xAxis = d3.svg.axis()
                 .scale(x0)
@@ -201,8 +202,13 @@ terra.d3GroupedBar = function(data) {
                          thisDate.getUTCFullYear() == eventDate.getUTCFullYear()) ||
                         // Or we're past it - so start here
                         thisDate > eventDate) {
-                        ret = dataPoint.date;
+                        ret = thisDate;
                         return false; // break out of loop
+                    }
+                } else if (data.groupedBy === 'yearly') {
+                    if ((thisDate.getUTCFullYear() >= eventDate.getUTCFullYear())) {
+                        ret = thisDate;
+                        return false;
                     }
                 }
             });
