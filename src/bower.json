@@ -14,7 +14,6 @@
     "bootstrap-multiselect": "~0.9.13",
     "c3": "~0.4.10",
     "d3": "~3.5.6",
-    "d3-tip": "~0.6.7",
     "geojs": "git://github.com/opengeoscience/geojs.git#e7832e7760cefc",
     "lodash": "~3.10.0"
   },
