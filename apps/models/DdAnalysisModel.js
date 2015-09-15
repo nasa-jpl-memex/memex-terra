@@ -30,17 +30,10 @@ terra.DdAnalysisModel = terra.AnalysisModel.extend({
         this.set('ddData', {
             stats: data.diff_in_diff,
             data: _.map(_.filter(data.data, function(datum) {
-                return !(datum.comparison === 0 &&
-                         datum.target === 0);
+                return !(datum.Comparison === 0 &&
+                         datum.Target === 0);
             }), function(datum) {
                 datum.date = new Date(datum.date);
-                // Lowercase key names
-                datum.comparison = datum.Comparison;
-                delete datum.Comparison;
-
-                datum.target = datum.Target;
-                delete datum.Target;
-
                 return datum;
             })
         });
@@ -60,19 +53,19 @@ terra.DdAnalysisModel = terra.AnalysisModel.extend({
                           .key(grouper.keyFunc)
                           .rollup(function(d) {
                               return {
-                                  comparison: d3.sum(d, function(g) {
-                                      return g.comparison;
+                                  Comparison: d3.sum(d, function(g) {
+                                      return g.Comparison;
                                   }),
-                                  target: d3.sum(d, function(g) {
-                                      return g.target;
+                                  Target: d3.sum(d, function(g) {
+                                      return g.Target;
                                   })
                               };
                           })
                           .entries(data.data), function(datum) {
                               return {
                                   date: grouper.dateToKeyFunc(datum.key),
-                                  target: datum.values.target,
-                                  comparison: datum.values.comparison
+                                  Target: datum.values.Target,
+                                  Comparison: datum.values.Comparison
                               };
                           });
 

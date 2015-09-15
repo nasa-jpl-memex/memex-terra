@@ -12,9 +12,7 @@ terra.DdAnalysisView = Backbone.View.extend({
             return;
         }
 
-        $('#dd-analysis-overlay').draggable();
-
-        this.groupedBy = 'monthly';
+        this.groupedBy = 'yearly';
         this.model.groupedBy(this.groupedBy);
 
         this.model.on('change:ddDisplayData', this.render, this);
@@ -39,11 +37,7 @@ terra.DdAnalysisView = Backbone.View.extend({
 
             this.$el.find('input[value="' + this.groupedBy  + '"]').attr('checked', true);
 
-            if (_.isUndefined(this.redraw)) {
-                this.redraw = terra.d3GroupedBar(renderData);
-            } else {
-                this.redraw(renderData);
-            }
+            terra.c3GroupedBar(renderData);
 
             this.$el.show();
         }

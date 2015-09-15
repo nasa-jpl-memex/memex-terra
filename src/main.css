@@ -40,6 +40,7 @@ a {
 #analyses-tabs {
     padding: 0px;
     margin: 10px;
+    margin-top: 5px;
     opacity: .9;
 }
 
@@ -49,26 +50,26 @@ a {
 
 #ts-analysis-overlay {
     position:absolute;
-    top:313px;
+    top:304px;
     left:8px;
     background-color: #ffffff;
     z-index: 999;
     opacity: .9;
     border: 2px solid #4d4d4d;
-    padding: 5px;
+    padding: 2px;
     border-radius:4px;
     display: none;
 }
 
 #dd-analysis-overlay {
     position:absolute;
-    top:663px;
+    top:649px;
     left:8px;
     background-color: #ffffff;
     z-index: 999;
     opacity: .9;
     border: 2px solid #4d4d4d;
-    padding: 5px;
+    padding: 2px;
     border-radius:4px;
     display: none;
 }
@@ -119,6 +120,10 @@ a {
     margin-left: 50px;
 }
 
+#dd-analysis-grouping input[type=radio] {
+    margin-left: 10px;
+}
+
 .action-form {
     background-color: #fff;
 }
@@ -155,4 +160,6 @@ a {
   margin: -1px 0 0 0;
   top: 100%;
   left: 0;
+svg g.legend {
+    font-size: 15px;
 }
