@@ -58,16 +58,6 @@ terra.TsAnalysisModel = terra.AnalysisModel.extend({
                             return terra.msaCollection.get(group);
                         });
 
-                        // Remove all models we don't have a shape for
-                        _.remove(similarModels, function(model) {
-                            if (_.isEmpty(model.get('shape'))) {
-                                console.log('MSA ' + model.get('name')  + ' has no shape, skipping.');
-                                return true;
-                            }
-
-                            return false;
-                        });
-
                         tsData.push({
                             label: 'comp',
                             groups: compData.groups,

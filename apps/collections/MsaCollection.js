@@ -18,14 +18,10 @@ terra.MsaCollection = Backbone.Collection.extend({
     // @todo shouldn't this be handled in a view?
     populateDropdown: function() {
         _.each(this._sortedModels(), function(model) {
-            if (!_.isEmpty(model.get('shape'))) {
-                $("#gs-select-location, #dd-select-location").append("<option>" + model.get('name'));
-                $('#dd-select-compare-location').append($('<option></option>')
-                                                        .attr('value', model.get('name'))
-                                                        .text(model.get('name')));
-            } else {
-                console.log('Skipping MSA ' + model.get('name') + ' (No shape found).');
-            }
+            $("#gs-select-location, #dd-select-location").append("<option>" + model.get('name'));
+            $('#dd-select-compare-location').append($('<option></option>')
+                                                    .attr('value', model.get('name'))
+                                                    .text(model.get('name')));
         });
     },
 
@@ -34,6 +30,11 @@ terra.MsaCollection = Backbone.Collection.extend({
          * Gathers the bounding boxes of msaModels and computes
          * a parent bounding box.
          **/
+        // Filter msaModels to those we have a shape for
+        msaModels = _.filter(msaModels, function(msaModel) {
+            return !_.isEmpty(msaModel.get('shape'));
+        });
+
         var boundingBoxes = _.invoke(msaModels, 'getBoundingBox');
         var firstBoundingBox = _.first(boundingBoxes);
         var minX = firstBoundingBox[0][0],

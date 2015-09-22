@@ -2,7 +2,11 @@ var terra = terra || {};
 
 terra.MsaView = Backbone.View.extend({
     initialize: function(options) {
-        this.render(options);
+        if (_.isEmpty(options.model.get('shape'))) {
+            console.log('Skipping rendering of ' + options.model.get('name')  + ' due to missing shapefile.');
+        } else {
+            this.render(options);
+        }
     },
 
     render: function(options) {
