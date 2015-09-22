@@ -24,5 +24,5 @@ def deploy():
 
 @task
 def update():
-    sudo('./crane kill tempus')
-    sudo('./crane lift tempus')
+    sudo('./crane --force rm tempus')
+    sudo('./crane lift')
